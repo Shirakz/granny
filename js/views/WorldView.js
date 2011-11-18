@@ -1,17 +1,22 @@
 $(document).ready(function () {
     granny.WorldView = Backbone.View.extend({
-        el: $('canvas'),
+        
         pressedKeys: {            
             65: false, // a
-            68: false, // d
-            37: false, // <-
-            39: false, // ->
-            83: false
+            68: false, // d 
+            83: false, // s
+            37: false, // <- (left key)
+            39: false, // -> (right key)            
+            38: false // ^ (up key)
         },
         
+        // entry point
         initialize: function () {
+        
+            // pass "this" referring to this object to the listed methods instead of the default "this"
             _.bindAll(this, 'render', 'keydown', 'release', 'addWater', 'waterFall', 'addCannon', 'cannonFall');
             
+            // instance the models
             this.world = new granny.World();
             this.granny = new granny.Granny();
             this.bowl = new granny.Bowl();
@@ -19,9 +24,10 @@ $(document).ready(function () {
             this.cannons = new granny.Cannons();
             
             this.bowl.set({
-                positionY: this.world.canvas().height - this.bowl.get('height') - 10
+                positionY: this.world.get('height') - this.bowl.get('height') - 10
             });
             
+            // key events
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.release);
             
@@ -31,21 +37,25 @@ $(document).ready(function () {
                     img.src = 'img/' + item;
             });
             
-            
+            // start rendering
             this.render();
+            
         },
         
+        
+        // self-calling function responsible for the rendering of the app
         render: function () {
-            var that = this,
-                ctx = this.world.canvas().ctx,
-                bg = this.world.picture().image,
-                grannyImg = this.granny.picture('img/granny_' + this.granny.get('currentDirection') + '.png').image,
+        
+            var refreshTime = 60, // lower = more fluid (and more CPU consuming)
+                that = this, // instance "this" locally so we can use it within the setTimeout call
+                ctx = this.world.get('ctx'),
+                bg = this.world.image('img/background.png'),
+                grannyImg = this.granny.image('img/granny_' + this.granny.get('currentDirection') + '.png'),
                 grannyX = this.granny.get('positionX'),
                 grannyY = this.granny.get('positionY'),
-                bowlImg = this.bowl.picture('img/bowl' + this.bowl.get('energy') + '.png').image,
+                bowlImg = this.bowl.image('img/bowl' + this.bowl.get('energy') + '.png'),
                 bowlX = this.bowl.get('positionX'),
-                bowlY = this.bowl.get('positionY');
-           
+                bowlY = this.bowl.get('positionY');           
             
             bg.onload = function () {
                 ctx.drawImage(bg, 0, 0);
@@ -60,45 +70,52 @@ $(document).ready(function () {
             };
 
             _(this.waters.models).each(function (water) {
-                var sprite = water.get('waterSprite') === 1 ? 2 : 1,
-                    waterImg = water.picture('img/water' + sprite + '.png').image,
+                var sprite = water.get('waterSprite') === 1 ? 2 : 1, // alternate between the 2 water images
+                    waterImg = water.image('img/water' + sprite + '.png'),
                     waterX = water.get('positionX'),
                     waterY = water.get('positionY');
                     
-                water.set({waterSprite: sprite}); 
+                water.set({
+                    waterSprite: sprite
+                }); 
+                
                 waterImg.onload = function () {
                     ctx.drawImage(waterImg, waterX, waterY);
-                };
+                };                
             }, this);
             
+            // loop through the models in the cannons collection
             _(this.cannons.models).each(function (cannon) {
-                var cannonImg = cannon.picture('img/cannon.png').image,
+                var cannonImg = cannon.image('img/cannon.png'),
                     cannonX = cannon.get('positionX'),
                     cannonY = cannon.get('positionY');
                     
-                // cannon.set({waterSprite: sprite}); 
                 cannonImg.onload = function () {
                     ctx.drawImage(cannonImg, cannonX, cannonY);
                 };
-            }, this);
-                 
+            }, this);                 
             
+            // call itself
             setTimeout(function () {
                 that.render();
-            }, 60);
+            }, refreshTime);
+            
         },
         
         
+        // handle the keydown events
+        // code could probably be cleaned up a lot
         keydown: function (ev) {      
+        
             var that = this,
                 key = ev.keyCode;
 
             // if the key was just pressed
-            if (!this.pressedKeys[ev.keyCode]) {
-                
-                this.pressedKeys[ev.keyCode] = true;
+            if (!this.pressedKeys[key]) {                
+                this.pressedKeys[key] = true;
                 
                 switch (key) {
+                
                     // a
                     case 65:
                     
@@ -106,6 +123,7 @@ $(document).ready(function () {
                         // to keep moving while the button is pressed
                         // without blocking the onkeydown events
                         (function grannyLeft() {
+                        
                             var speed = that.granny.get('speed'),
                                 x = that.granny.get('positionX');
                                 marginLeft = that.granny.get('marginLeft'); 
@@ -119,15 +137,14 @@ $(document).ready(function () {
                                 if (x > marginLeft) {
                                 
                                     that.granny.set({
-                                        positionX: x - speed
-                                    });
-                                    
-                                    
-                                    that.granny.set({currentDirection: 'left'});
+                                        positionX: x - speed,
+                                        currentDirection: 'left'
+                                    });                                    
 
                                     setTimeout(grannyLeft, 250 * (1 / speed));
                                 }
                             }
+                            
                         })();
                         break;
                         
@@ -135,11 +152,12 @@ $(document).ready(function () {
                     case 68:
                        
                        (function grannyRight() {
+                       
                             var speed = that.granny.get('speed'),
                                 x = that.granny.get('positionX'),
                                 marginRight = that.granny.get('marginRight'),
                                 grannyWidth = that.granny.get('width'),
-                                worldWidth = that.world.canvas().width;
+                                worldWidth = that.world.get('width');
                             
                             // correct the position "jump" when changing directions
                             if (that.granny.get('currentDirection') === 'left') {
@@ -149,14 +167,14 @@ $(document).ready(function () {
                             if (that.pressedKeys[68]) {
                                 if (x < worldWidth - grannyWidth - marginRight) {
                                     that.granny.set({
-                                        positionX: x + speed
+                                        positionX: x + speed,
+                                        currentDirection: 'right'
                                     });
                                     
-                                    that.granny.set({currentDirection: 'right'});
-
                                     setTimeout(grannyRight, 250 * (1 / speed));
                                 }
                             }
+                            
                         })();
                         break;
                           
@@ -165,12 +183,12 @@ $(document).ready(function () {
                     
                         this.addWater();
                         break;
-
                         
                     // <- (left)
                     case 37:
                     
                         (function bowlLeft() {
+                        
                             var speed = that.bowl.get('speed'),
                                 x = that.bowl.get('positionX'),
                                 marginLeft = that.bowl.get('marginLeft'); 
@@ -184,6 +202,7 @@ $(document).ready(function () {
                                     setTimeout(bowlLeft, 250 * (1 / speed));
                                 }
                             }
+                            
                         })();
                         break;
                         
@@ -191,11 +210,12 @@ $(document).ready(function () {
                     case 39:
                         
                         (function bowlRight() {
+                        
                             var speed = that.bowl.get('speed'),
                                 x = that.bowl.get('positionX'),
                                 marginRight = that.bowl.get('marginRight'),
                                 bowlWidth = that.bowl.get('width');
-                                worldWidth = that.world.canvas().width; 
+                                worldWidth = that.world.get('width'); 
 
                             if (that.pressedKeys[39]) {
                                 if (x < worldWidth - bowlWidth - marginRight) {
@@ -206,6 +226,7 @@ $(document).ready(function () {
                                     setTimeout(bowlRight, 250 * (1 / 10));
                                 }
                             }
+                            
                         })();
                         break;
                                         
@@ -214,43 +235,45 @@ $(document).ready(function () {
                     
                         this.addCannon();
                         break;
+                        
                 }
             }
         },
         
+        
+        // handle the keyup events
         release: function (ev) {
+        
             this.pressedKeys[ev.keyCode] = false;
+            
         },
         
+        
         addWater: function () {
+        
             var water = new granny.Water(),
-                correctionX;
-
-            if (this.granny.get('currentDirection') === 'left') {
-                correctionX = 20;
-            } else {
-                correctionX = -115;
-            }
+                // correct the position of the water depending on where she's looking at
+                correctionX = this.granny.get('currentDirection') === 'left' ? 20 : -115;
 
             water.set({
-                positionX: this.granny.get('positionX') - correctionX
-            });  
-            
-            water.set({
+                positionX: this.granny.get('positionX') - correctionX,
                 positionY: this.granny.get('positionY') + this.granny.get('height') - 50
-            });
+            });  
             
             this.waters.add(water);
             
             this.waterFall(water);
+            
         },
         
+        
         waterFall: function (water) {
+        
             var that = this,
                 waterX = water.get('positionX'),
                 waterY = water.get('positionY'),
                 speed = water.get('speed'),
-                worldHeight = this.world.canvas().height,
+                worldHeight = this.world.get('height'),
                 bowlWidth = this.bowl.get('width'),
                 bowlX = this.bowl.get('positionX'),
                 bowlY = this.bowl.get('positionY');
@@ -262,6 +285,7 @@ $(document).ready(function () {
                 if (waterY > bowlY) {
                     if (waterX >= bowlX && waterX <= bowlX + bowlWidth) {
                         water.destroy();
+                        
                         this.bowl.set({
                             energy: this.bowl.get('energy') + 1
                         });
@@ -276,17 +300,23 @@ $(document).ready(function () {
                 
                 setTimeout(function () {
                     that.waterFall(water);
-                }, 250 * (1 / speed));
-                
+                }, 250 * (1 / speed));                
                 
             } else {
                 water.destroy();
-                this.bowl.set({lifes: this.bowl.get('lifes') - 1});
+                
+                this.bowl.set({
+                    lifes: this.bowl.get('lifes') - 1
+                });
+                
                 console.log('Bowl dead! Lifes:' + this.bowl.get('lifes'));
             }
+            
         },
         
+        
         addCannon: function () {
+        
             var energy = this.bowl.get('energy'),
                 cannon;
             
@@ -295,16 +325,23 @@ $(document).ready(function () {
             }
             
             cannon = new granny.Cannon();
-            cannon.set({positionX: this.bowl.get('positionX')});
+            cannon.set({
+                positionX: this.bowl.get('positionX')
+            });
             
-            this.bowl.set({energy: 0});
+            this.bowl.set({
+                energy: 0
+            });
             
             this.cannons.add(cannon);
             
             this.cannonFall(cannon);
+            
         },
         
+        
         cannonFall: function (cannon) {
+        
              var that = this,
                 cannonX = cannon.get('positionX'),
                 cannonY = cannon.get('positionY'),
@@ -342,6 +379,8 @@ $(document).ready(function () {
             } else {
                 cannon.destroy();
             }
+            
         }
+        
     });
 });

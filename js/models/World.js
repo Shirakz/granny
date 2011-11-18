@@ -3,30 +3,22 @@ $(document).ready(function () {
     
     granny.World = Backbone.Model.extend({
 
-        canvas: function () {
-            var el = document.getElementById('canvas'),
-                width = $('#canvas').width(),
-                height = $('#canvas').height(),
-                ctx = el.getContext('2d');
-                
-            return {
-                el: el,
-                width: width,
-                height: height,
-                ctx: ctx
-            };
+        defaults: {
+            width: $('#canvas').width(),
+            height: $('#canvas').height(),
+            ctx: document.getElementById('canvas').getContext('2d')
         },
+
                 
-        picture: function () {
+        image: function (src) {
+        
             var image = new Image();
             
-            image.src = 'img/background.png';
+            image.src = src || '';
         
-            return {
-                image: image,
-                width: $('#canvas').width(),
-                height: $('#canvas').height()
-            };
+            return image;
+            
         }
+        
     });
 });

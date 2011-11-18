@@ -2,6 +2,7 @@ $(document).ready(function () {
     window.granny = window.granny || {};
     
     granny.Granny = Backbone.Model.extend({
+    
         defaults: {
             lifes: 3,
             speed: 12,
@@ -14,14 +15,16 @@ $(document).ready(function () {
             currentDirection: 'left'
         },
         
-        picture: function (src) {
+        
+        image: function (src) {
+        
             var image = new Image();
             
             image.src = src || '';
         
-            return {
-                image: image
-            };
+            return image;
+            
         }
+        
     });
 });

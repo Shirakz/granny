@@ -2,6 +2,7 @@ $(document).ready(function () {
     window.granny = window.granny || {};
     
     granny.Bowl = Backbone.Model.extend({
+    
         defaults: {
             lifes: 3,
             speed: 12,
@@ -14,15 +15,17 @@ $(document).ready(function () {
             marginRight: 0
         },
         
-        picture: function (src) {
+        
+        image: function (src) {
+        
             var image = new Image();
             
             image.src = src || '';
         
-            return {
-                image: image
-            };
+            return image;
+            
         },
+        
         
         validate: function (obj) {
             var check = null;
@@ -32,5 +35,6 @@ $(document).ready(function () {
             
             return check;
         }
+        
     });
 });

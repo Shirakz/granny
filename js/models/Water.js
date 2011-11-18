@@ -2,6 +2,7 @@ $(document).ready(function () {
     window.granny = window.granny || {};
     
     granny.Water = Backbone.Model.extend({
+    
         defaults: {
             speed: 8,
             positionX: 50,
@@ -9,14 +10,16 @@ $(document).ready(function () {
             waterSprite: 1
         },
         
-        picture: function (src) {
+        
+        image: function (src) {
+        
             var image = new Image();
             
             image.src = src || '';
         
-            return {
-                image: image
-            };
+            return image;
+            
         }
+        
     });
 });

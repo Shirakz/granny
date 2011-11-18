@@ -1,1 +1,1 @@
-$(document).ready(function () {    window.granny = window.granny || {};        granny.Waters = Backbone.Collection.extend({        model: granny.Water    });});
+$(document).ready(function () {    window.granny = window.granny || {};        granny.Waters = Backbone.Collection.extend({        model: granny.Water    });    });
