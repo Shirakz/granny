@@ -1,51 +1,8 @@
-#wrapper {
-	margin: auto;
-	width: 950px;	
+html {
+    background: #333;
 }
 
-#zoom {
-	width: 400px;
-	height: 300px;
-	float: left;
-	overflow: hidden;
-    position: relative;
-}
-
-#zoom img{
-	position: absolute;
-    float: left;
-    overflow: hidden;
-}
-
-#minimap {
-	width: 400px;
-	height: 300px;
-	float: right;
-    position: relative;
-    background-image: url("../img/fractalmini.gif");
-    overflow: hidden;
-    
-}
-
-#mask {
-	width: 400px;
-	height: 300px;
-    background-color: #000;
-    opacity: 0.6;
-    float: left;
-    position: absolute;
-}
-
-#viewport {
-    width: 40px;
-	height: 30px;
-    border: 2px solid #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    float: left;
-    position: absolute;
-}
-
-#viewport img {
-    position: absolute;
+body {    
+	margin: 0 auto;
+	width: 800px;    
 }

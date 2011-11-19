@@ -3,8 +3,26 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Granny</title>
+    
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/default.css"/>
 </head>
 <body>
+
+	<canvas id="canvas" width="800" height="600">Your browser does not support the <code>canvas</code> element. Please upgrade to a newer version.</canvas>
+    
+    <audio id="water-drop" preload="auto">
+        <source src="audio/water-drop.ogg"></source>
+        <source src="audio/water-drop.mp3"></source>
+        Your browser does not support the <code>audio</code> element.  Please upgrade to a newer version.
+    </audio>
+    
+    <audio id="cannon" preload="auto">
+        <source src="audio/cannon.ogg"></source>
+        <source src="audio/cannon.mp3"></source>
+        Your browser does not support the <code>audio</code> element.  Please upgrade to a newer version.
+    </audio>
+
     <script type="text/javascript" src="js/libs/utils.js"></script>
     <script type="text/javascript" src="js/libs/jquery-min.js"></script>
     <script type="text/javascript" src="js/libs/underscore-min.js"></script>
@@ -22,21 +40,6 @@
     <script type="text/javascript" src="js/views/CollisionView.js"></script>
     <script type="text/javascript" src="js/views/SoundView.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
-
-	<canvas id="canvas" width="800" height="600">Your browser does not support the <code>canvas</code> element. Please upgrade to a newer version.</canvas>
     
-    <audio id="water-drop" preload="auto">
-        <source src="audio/water-drop.ogg"></source>
-        <source src="audio/water-drop.mp3"></source>
-        Your browser does not support the <code>audio</code> element.  Please upgrade to a newer version.
-    </audio>
-    
-    <audio id="cannon" preload="auto">
-        <source src="audio/cannon.ogg"></source>
-        <source src="audio/cannon.mp3"></source>
-        Your browser does not support the <code>audio</code> element.  Please upgrade to a newer version.
-    </audio>
-
-</audio> 
 </body>
 </html>
