@@ -1,3 +1,4 @@
+/*global granny, $, _, Backbone*/
 $(document).ready(function () {
 
     window.granny = window.granny || {}; 
@@ -113,6 +114,6 @@ $(document).ready(function () {
             water.destroy();
         }
     
-    }));
+    }))();
     
 });

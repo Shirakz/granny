@@ -1,3 +1,4 @@
+/*global granny, $, _, Backbone, requestAnimFrame*/
 $(document).ready(function () {
 
     window.granny = window.granny || {}; 
@@ -69,7 +70,7 @@ $(document).ready(function () {
                 });
                     
                 // switch the sprite every X frames
-                if (!(water.get('spriteCounter') % frameSwitchSpeed)) {
+                if ((water.get('spriteCounter') % frameSwitchSpeed) === 0) {
                     water.set({
                         waterSprite: waterSprite === 1 ? 2 : 1 
                     });

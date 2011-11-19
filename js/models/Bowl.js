@@ -1,3 +1,4 @@
+/*global $, _, Backbone, granny */
 $(document).ready(function () {
     window.granny = window.granny || {};
     
@@ -11,7 +12,7 @@ $(document).ready(function () {
             height: 76,
             positionX: 350,
             positionY: 500,
-            marginLeft: 20,
+            marginLeft: 0,
             marginRight: 0
         },
         
