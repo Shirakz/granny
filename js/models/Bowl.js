@@ -16,24 +16,41 @@ $(document).ready(function () {
         },
         
         
-        image: function (src) {
+        initialize: function () {
         
-            var image = new Image();
+            var image0 = new Image(),
+                image1 = new Image(),
+                image2 = new Image(),
+                image3 = new Image(),
+                image4 = new Image(),
+                image5 = new Image();
+                
+            image0.src = 'img/bowl0.png';
+            image1.src = 'img/bowl1.png';
+            image2.src = 'img/bowl2.png';
+            image3.src = 'img/bowl3.png';
+            image4.src = 'img/bowl4.png';
+            image5.src = 'img/bowl5.png';
             
-            image.src = src || '';
-        
-            return image;
-            
+            this.set({
+                image0: image0,
+                image1: image1,
+                image2: image2,
+                image3: image3,
+                image4: image4,
+                image5: image5
+            });
+
         },
         
         
         validate: function (obj) {
-            var check = null;
+            var error = null;
             if (obj.energy > 5) {
-                check = 'Cannot go over 5 energy';
+                error = 'Can\'t go over 5 energy';
             }
             
-            return check;
+            return error;
         }
         
     });

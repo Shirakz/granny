@@ -4,7 +4,7 @@ $(document).ready(function () {
     granny.Cannon = Backbone.Model.extend({
     
         defaults: {
-            speed: 15,
+            speed: 9,
             width: 130,
             height: 169,
             positionX: 50,
@@ -14,14 +14,17 @@ $(document).ready(function () {
         },
         
         
-        image: function (src) {
+        initialize: function () {
         
             var image = new Image();
             
-            image.src = src || '';
-        
-            return image;
+            image.src = 'img/cannon.png';
             
+            this.set({
+                image: image
+            });
+
         }
+        
     });
 });

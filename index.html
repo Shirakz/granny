@@ -5,10 +5,11 @@
 	<title>Granny</title>
 </head>
 <body>
+    <script type="text/javascript" src="js/libs/utils.js"></script>
     <script type="text/javascript" src="js/libs/jquery-min.js"></script>
     <script type="text/javascript" src="js/libs/underscore-min.js"></script>
     <script type="text/javascript" src="js/libs/backbone-min.js"></script>
-    <script type="text/javascript" src="js/models/World.js"></script>
+    <script type="text/javascript" src="js/models/Config.js"></script>
     <script type="text/javascript" src="js/models/Granny.js"></script>
     <script type="text/javascript" src="js/models/Bowl.js"></script>
     <script type="text/javascript" src="js/models/Water.js"></script>
@@ -16,7 +17,15 @@
     <script type="text/javascript" src="js/collections/Waters.js"></script>
     <script type="text/javascript" src="js/collections/Cannons.js"></script>
     <script type="text/javascript" src="js/views/WorldView.js"></script>
+    <script type="text/javascript" src="js/views/GrannyView.js"></script>
+    <script type="text/javascript" src="js/views/BowlView.js"></script>
+    <script type="text/javascript" src="js/views/CollisionView.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript">
+        window.log = function (c) {
+            return console.log(c);
+        }
+    </script>
 
 	<canvas id="canvas" width="800" height="600">Your browser does not support the canvas element. Please upgrade to a newer version.</canvas>
 </body>

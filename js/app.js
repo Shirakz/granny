@@ -1,1 +1,1 @@
-$(document).ready(function () {    window.granny = window.granny || {};    var worldView = new granny.WorldView();});
+$(document).ready(function () {    window.granny = window.granny || {};        // var collisionView = new granny.CollisionView();    var worldView = new granny.WorldView();    });
