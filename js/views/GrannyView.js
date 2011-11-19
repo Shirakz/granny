@@ -132,8 +132,9 @@ $(document).ready(function () {
                 positionY: this.model.get('positionY') + this.model.get('height') - 50
             });  
             
-            this.waters.add(water);
+            // water.get('soundAdd').play();
             
+            this.waters.add(water);
             this.waterFall(water);
             
         },

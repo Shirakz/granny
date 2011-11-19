@@ -11,7 +11,7 @@ $(document).ready(function () {
             positionX: 50,
             positionY: 350,
             cannonSprite: 1,
-            active: false
+            addSound: $('#cannon').get(0)
         },
         
         

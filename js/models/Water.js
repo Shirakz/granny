@@ -12,7 +12,8 @@ $(document).ready(function () {
             height: 43,
             waterSprite: 1,
             spriteCounter: 0,
-            frameSwitchSpeed: 5 // lower = faster
+            frameSwitchSpeed: 5, // lower = faster
+            addSound: $('#water-drop').get(0)
         },
         
         
