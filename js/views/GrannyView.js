@@ -14,14 +14,14 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'keydown', 'release', 'moveLeft', 'moveRight', 'dropWater', 'waterFall');
+            _.bindAll(this, 'keydown', 'release', 'moveLeft', 'moveRight', 'addWater', 'waterFall', 'loseLife');
             
-            this.config = granny.Config;
+            this.world = granny.World;
 
             // instance the models
             this.model = new granny.Granny();
             this.waters = new granny.Waters();            
-            
+                     
             // key events
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.release);
@@ -51,7 +51,7 @@ $(document).ready(function () {
                           
                     // s
                     case 83:                    
-                        this.dropWater();
+                        this.addWater();
                         break;  
                         
                 }
@@ -62,22 +62,24 @@ $(document).ready(function () {
         moveLeft: function () {
             var that = this,
                 speed = this.model.get('speed'),
-                refreshRate = this.config.get('refreshRate'),
+                refreshRate = this.world.get('refreshRate'),
                 x = this.model.get('positionX'),
-                marginLeft = this.model.get('marginLeft'); 
+                marginLeft = this.model.get('marginLeft'),
+                pause = this.world.get('pause');
             
             if (this.pressedKeys[65]) {
             
                 // correct the position "jump" when changing directions
                 x = this.model.get('currentDirection') === 'right' ? x - 65 : x;
-
                             
                 if (x > marginLeft) {
-                    this.model.set({
-                        positionX: x - speed,
-                        currentDirection: 'left'
-                    });
-
+                
+                    if (!pause) {
+                        this.model.set({
+                            positionX: x - speed,
+                            currentDirection: 'left'
+                        });
+                    }
                     setTimeout(that.moveLeft, refreshRate);
                 }
             }        
@@ -87,22 +89,26 @@ $(document).ready(function () {
         moveRight: function () {
             var that = this,
                 speed = this.model.get('speed'),
-                refreshRate = this.config.get('refreshRate'),
+                refreshRate = this.world.get('refreshRate'),
                 x = this.model.get('positionX'),
                 marginRight = this.model.get('marginRight'),
                 grannyWidth = that.model.get('width'),
-                configWidth = that.config.get('width'); 
+                worldWidth = that.world.get('width'),
+                pause = this.world.get('pause');
             
             if (this.pressedKeys[68]) {
             
                 // correct the position "jump" when changing directions
                 x = this.model.get('currentDirection') === 'left' ? x + 65 : x;
 
-                if (x < configWidth - grannyWidth - marginRight) {
-                    that.model.set({
-                        positionX: x + speed,
-                        currentDirection: 'right'
-                    });
+                if (x < worldWidth - grannyWidth - marginRight) {
+                
+                    if (!pause) {
+                        that.model.set({
+                            positionX: x + speed,
+                            currentDirection: 'right'
+                        });
+                    }
                                     
                     setTimeout(that.moveRight, refreshRate);
                 }
@@ -116,7 +122,7 @@ $(document).ready(function () {
             this.pressedKeys[ev.keyCode] = false;            
         },
         
-        dropWater: function () {        
+        addWater: function () {        
             var water = new granny.Water(),
                 // correct the position of the water depending on where she's looking at
                 correctionX = this.model.get('currentDirection') === 'left' ? 20 : -115;
@@ -135,16 +141,22 @@ $(document).ready(function () {
         waterFall: function (water) {        
             var that = this,
                 waterY = water.get('positionY'),
-                refreshRate = this.config.get('refreshRate'),
-                speed = water.get('speed');
-
+                refreshRate = this.world.get('refreshRate'),
+                speed = water.get('speed'),
+                pause = this.world.get('pause');
+                
+            if (!pause) {
                 water.set({
                     positionY: waterY + speed
                 });
-
-                setTimeout(function () {
+            }
+            
+            setTimeout(function () {
+                // if the water is still alive, call again
+                if (_.indexOf(that.waters.models, water) !== -1) {
                     that.waterFall(water);
-                }, refreshRate);                
+                }
+            }, refreshRate);               
         },
         
         
@@ -161,6 +173,8 @@ $(document).ready(function () {
             this.model.set({
                 lifes: lifes
             });
+            
+            this.world.set({pause: true});
             
             console.log('granny died! lifes: ' + this.model.get('lifes'));            
         }

@@ -14,16 +14,16 @@ $(document).ready(function () {
         // entry point
         initialize: function () {
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'keydown', 'release', 'moveLeft', 'moveRight', 'addCannon', 'cannonFall', 'gainEnergy', 'loseLife');
+            _.bindAll(this, 'keydown', 'release', 'moveLeft', 'moveRight', 'addCannon', 'cannonFall', 'addEnergy', 'loseLife');
+
+            this.world = granny.World;
 
             // instance the models
             this.model = new granny.Bowl();
             this.cannons = new granny.Cannons();
 
-            this.config = granny.Config;
-
             this.model.set({
-                positionY: this.config.get('height') - this.model.get('height') - 10
+                positionY: this.world.get('height') - this.model.get('height') - 10
             });
 
             $(document).on('keydown', this.keydown);
@@ -64,7 +64,7 @@ $(document).ready(function () {
         moveLeft: function () {
             var that = this,
                 speed = this.model.get('speed'),
-                refreshRate = this.config.get('refreshRate'),
+                refreshRate = this.world.get('refreshRate'),
                 x = this.model.get('positionX'),
                 marginLeft = this.model.get('marginLeft');
 
@@ -83,14 +83,14 @@ $(document).ready(function () {
         moveRight: function () {
             var that = this,
                 speed = this.model.get('speed'),
-                refreshRate = this.config.get('refreshRate'),
+                refreshRate = this.world.get('refreshRate'),
                 x = this.model.get('positionX'),
                 marginRight = this.model.get('marginRight'),
                 bowlWidth = this.model.get('width'),
-                configWidth = this.config.get('width');
+                worldWidth = this.world.get('width');
 
             if (this.pressedKeys[39]) {
-                if (x < configWidth - bowlWidth - marginRight) {
+                if (x < worldWidth - bowlWidth - marginRight) {
                     this.model.set({
                         positionX: x + speed
                     });
@@ -133,20 +133,23 @@ $(document).ready(function () {
         cannonFall: function (cannon) {
             var that = this,
                 cannonY = cannon.get('positionY'),
-                refreshRate = this.config.get('refreshRate'),
+                refreshRate = this.world.get('refreshRate'),
                 speed = cannon.get('speed');
 
             cannon.set({
                 positionY: cannonY - speed
             });
-
+            
             setTimeout(function () {
-                that.cannonFall(cannon);
+                // if the cannon is still alive, call again
+                if (_.indexOf(that.cannons.models, cannon) !== -1) {
+                    that.cannonFall(cannon);
+                }
             }, refreshRate);
         },
 
 
-        gainEnergy: function (n) {
+        addEnergy: function (n) {
             var energy = this.model.get('energy');
 
             energy += n;

@@ -10,7 +10,7 @@ $(document).ready(function () {
             _.bindAll(this, 'checkWater', 'catchWater', 'missWater', 'checkCannon', 'hitCannon', 'missCannon');
             
             // reference the singletons locally
-            this.config = granny.Config;
+            this.world = granny.World;
             this.bowl = granny.BowlSingleton;
             this.granny = granny.GrannySingleton;
 
@@ -68,7 +68,7 @@ $(document).ready(function () {
         
         
         checkWater: function (water) {        
-            var configHeight = this.config.get('height'),
+            var worldHeight = this.world.get('height'),
                 bowlX = this.bowl.model.get('positionX'),
                 bowlY = this.bowl.model.get('positionY'),
                 bowlWidth = this.bowl.model.get('width'),
@@ -78,7 +78,7 @@ $(document).ready(function () {
                 waterHeight = water.get('height');
             
             // on its way down
-            if (waterY + waterHeight < configHeight) {
+            if (waterY + waterHeight < worldHeight) {
                 
                 // catching zone
                 if (waterY >= bowlY) {
@@ -98,7 +98,7 @@ $(document).ready(function () {
         
                 
         catchWater: function (water) {            
-            this.bowl.gainEnergy(1);
+            this.bowl.addEnergy(1);
             water.destroy();
         },
         

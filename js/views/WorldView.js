@@ -8,15 +8,17 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'render', 'animate');
+            _.bindAll(this, 'render', 'animate', 'end');
             
             // reference the singletons locally
-            this.config = granny.Config;
+            this.model = granny.World;
             this.bowl = granny.BowlSingleton;
             this.granny = granny.GrannySingleton;
-                        
+                  
+            this.granny.waters.bind('missWater', this.end);
+                  
             this.bowl.model.set({
-                positionY: this.config.get('height') - this.bowl.model.get('height') - 10
+                positionY: this.model.get('height') - this.bowl.model.get('height') - 10
             });
 
             // cache the images
@@ -32,9 +34,9 @@ $(document).ready(function () {
         
         // self-calling function responsible for the rendering of the app
         render: function () {
-            var refreshTime = this.config.get('refreshRate'), 
-                ctx = this.config.get('ctx'),
-                bg = this.config.get('background'),
+            var refreshTime = this.model.get('refreshRate'), 
+                ctx = this.model.get('ctx'),
+                bg = this.model.get('background'),
                 bowlEnergy = this.bowl.model.get('energy'),
                 bowlImg = this.bowl.model.get('image' + bowlEnergy),
                 bowlX = this.bowl.model.get('positionX'),
@@ -96,6 +98,17 @@ $(document).ready(function () {
         animate: function () {
             requestAnimFrame(this.animate);
             this.render();
+        },
+        
+        
+        end: function () {
+            _(this.granny.waters).each(function (water) {
+                water.destroy();
+            });
+            
+            _(this.bowl.cannons).each(function (cannon) {
+                cannon.destroy();
+            });
         }
         
     });
