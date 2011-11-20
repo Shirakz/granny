@@ -2,7 +2,7 @@
 $(document).ready(function () {
     window.granny = window.granny || {};
     
-    granny.Cannon = Backbone.Model.extend({
+    granny.Cannon = Backbone.Model.extend({    
     
         defaults: {
             speed: 9,
@@ -15,8 +15,7 @@ $(document).ready(function () {
         },
         
         
-        initialize: function () {
-        
+        initialize: function () {        
             var image = new Image();
             
             image.src = 'img/cannon.png';
@@ -24,7 +23,6 @@ $(document).ready(function () {
             this.set({
                 image: image
             });
-
         }
         
     });

@@ -5,19 +5,17 @@ $(document).ready(function () {
     
     granny.SoundView = new (Backbone.View.extend({
     
-        initialize: function () {
-        
-            _.bindAll(this, 'playSound');
+        initialize: function () {        
+            _.bindAll(this, 'add');
             
             this.granny = granny.GrannySingleton;
             this.bowl = granny.BowlSingleton;
             
-           this.granny.waters.bind('add', this.playSound);           
-           this.bowl.cannons.bind('add', this.playSound);
-
+           this.granny.waters.bind('add', this.add);           
+           this.bowl.cannons.bind('add', this.add);
         },
         
-        playSound: function (ev) {
+        add: function (ev) {
             var sound = ev.get('addSound');
             sound.play();
         }

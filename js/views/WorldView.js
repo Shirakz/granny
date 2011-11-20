@@ -6,8 +6,7 @@ $(document).ready(function () {
     granny.WorldView = Backbone.View.extend({
         
         // entry point
-        initialize: function () {
-        
+        initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
             _.bindAll(this, 'render', 'animate');
             
@@ -27,14 +26,12 @@ $(document).ready(function () {
             });
 
             // start the rendering loop
-            this.animate();
-            
+            this.animate();            
         },
         
         
         // self-calling function responsible for the rendering of the app
         render: function () {
-
             var refreshTime = this.config.get('refreshRate'), 
                 ctx = this.config.get('ctx'),
                 bg = this.config.get('background'),

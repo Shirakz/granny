@@ -17,8 +17,7 @@ $(document).ready(function () {
         },
         
         
-        initialize: function () {
-        
+        initialize: function () {        
             var imageLeft = new Image(),
                 imageRight = new Image();
             
@@ -29,7 +28,6 @@ $(document).ready(function () {
                 imageLeft: imageLeft,
                 imageRight: imageRight
             });
-
         }
         
     });

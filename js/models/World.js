@@ -13,16 +13,14 @@ $(document).ready(function () {
         },
 
                 
-        image: function (src) {
-        
+        image: function (src) {        
             var image = new Image();
             
             image.src = src || '';
         
             return image;
             
-        }
-        
+        }        
     });
     
 });

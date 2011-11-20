@@ -17,8 +17,7 @@ $(document).ready(function () {
         },
         
         
-        initialize: function () {
-        
+        initialize: function () {        
             var image0 = new Image(),
                 image1 = new Image(),
                 image2 = new Image(),
@@ -41,7 +40,6 @@ $(document).ready(function () {
                 image4: image4,
                 image5: image5
             });
-
         },
         
         

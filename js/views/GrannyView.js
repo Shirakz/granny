@@ -12,8 +12,7 @@ $(document).ready(function () {
         },
         
         // entry point
-        initialize: function () {
-        
+        initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
             _.bindAll(this, 'keydown', 'release', 'moveLeft', 'moveRight', 'dropWater', 'waterFall');
             
@@ -26,13 +25,11 @@ $(document).ready(function () {
             // key events
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.release);
-
         },
 
         
         // handle the keydown events
-        keydown: function (ev) {      
-        
+        keydown: function (ev) {              
             var that = this,    
                 key = ev.keyCode;
 
@@ -115,14 +112,11 @@ $(document).ready(function () {
         
         
         // handle the keyup events
-        release: function (ev) {
-        
-            this.pressedKeys[ev.keyCode] = false;
-            
+        release: function (ev) {        
+            this.pressedKeys[ev.keyCode] = false;            
         },
         
-        dropWater: function () {
-        
+        dropWater: function () {        
             var water = new granny.Water(),
                 // correct the position of the water depending on where she's looking at
                 correctionX = this.model.get('currentDirection') === 'left' ? 20 : -115;
@@ -134,13 +128,11 @@ $(document).ready(function () {
             
             this.waters.add(water);
             
-            this.waterFall(water);
-            
+            this.waterFall(water);            
         },
         
         
-        waterFall: function (water) {
-        
+        waterFall: function (water) {        
             var that = this,
                 waterY = water.get('positionY'),
                 refreshRate = this.config.get('refreshRate'),
@@ -152,13 +144,11 @@ $(document).ready(function () {
 
                 setTimeout(function () {
                     that.waterFall(water);
-                }, refreshRate);
-                
+                }, refreshRate);                
         },
         
         
-        loseLife: function (n) {
-            
+        loseLife: function (n) {            
             var lifes = this.model.get('lifes');
             
             lifes -= n;
@@ -172,8 +162,7 @@ $(document).ready(function () {
                 lifes: lifes
             });
             
-            console.log('granny died! lifes: ' + this.model.get('lifes'));
-            
+            console.log('granny died! lifes: ' + this.model.get('lifes'));            
         }
         
     }))();

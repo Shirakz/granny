@@ -5,8 +5,7 @@ $(document).ready(function () {
     
     granny.CollisionView = new (Backbone.View.extend({
     
-        initialize: function () {
-        
+        initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
             _.bindAll(this, 'checkWater', 'catchWater', 'missWater', 'checkCannon', 'hitCannon', 'missCannon');
             
@@ -21,13 +20,11 @@ $(document).ready(function () {
             
             this.bowl.cannons.bind('change:positionY', this.checkCannon);
             this.bowl.cannons.bind('hitCannon', this.hitCannon);
-            this.bowl.cannons.bind('missCannon', this.missCannon);
-            
+            this.bowl.cannons.bind('missCannon', this.missCannon);            
         },
         
         
         checkCannon: function (cannon) {
-
             var cannonX = cannon.get('positionX'),
                 cannonY = cannon.get('positionY'),
                 cannonHeight = cannon.get('height'),
@@ -55,8 +52,7 @@ $(document).ready(function () {
             // miss
             } else {
                 cannon.trigger('missCannon', cannon);
-            }
-                
+            }                
         },
         
         
@@ -71,8 +67,7 @@ $(document).ready(function () {
         },
         
         
-        checkWater: function (water) {
-        
+        checkWater: function (water) {        
             var configHeight = this.config.get('height'),
                 bowlX = this.bowl.model.get('positionX'),
                 bowlY = this.bowl.model.get('positionY'),
@@ -98,8 +93,7 @@ $(document).ready(function () {
             // didn't catch it    
             } else {
                 water.trigger('missWater', water);
-            }
-            
+            }            
         },
         
                 

@@ -13,8 +13,7 @@ $(document).ready(function () {
         },
 
         
-        initialize: function () {
-        
+        initialize: function () {        
             var image = new Image();
             
             image.src = 'img/background.png';
@@ -22,9 +21,7 @@ $(document).ready(function () {
             this.set({
                 background: image
             });
-
         }
         
-    }))();
-    
+    }))();    
 });
