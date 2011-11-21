@@ -10,23 +10,19 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'render', 'animate', 'singleKeyDown', 'keydown', 'keyup', 'pause', 'reset', 'move');
+            _.bindAll(this, 'animate', 'render', 'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 'keyup', 'pause', 'endTurn', 'move');
             
             // reference the singletons locally
             this.model = granny.World;
             this.bowl = granny.BowlSingleton;
             this.granny = granny.GrannySingleton;
                   
-            // this.granny.model.bind('change:lifes', this.pause);
-            this.granny.model.bind('change:lifes', this.reset);
-            this.bowl.model.bind('change:lifes', this.reset);
+            this.granny.model.bind('change:lifes', this.endTurn);
+            this.bowl.model.bind('change:lifes', this.endTurn);
             this.model.bind('singleKeyDown', this.singleKeyDown);
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.keyup);
             
-            this.bowl.model.set({
-                positionY: this.model.get('height') - this.bowl.model.get('height') - 10
-            });
 
             // cache the images
             _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
@@ -36,8 +32,7 @@ $(document).ready(function () {
 
             // start the rendering loop
             this.animate();         
-
-                this.move();
+            
         },
         
         
@@ -47,8 +42,7 @@ $(document).ready(function () {
             this.render();
         },
         
-        
-        // self-calling function responsible for the rendering of the app
+       
         render: function () {
             var refreshTime = this.model.get('refreshRate'), 
                 ctx = this.model.get('ctx'),
@@ -67,8 +61,14 @@ $(document).ready(function () {
             ctx.drawImage(grannyImg, grannyX, grannyY);
             ctx.drawImage(bowlImg, bowlX, bowlY);
             
-            // this.granny.move();
+            this.renderWaters(ctx);
+            this.renderCannons(ctx);
             
+            this.move();
+        },
+        
+        
+        renderWaters: function (ctx) {
             _(this.granny.waters.models).each(function (water) {
                 var waterImg,
                     waterSprite = water.get('waterSprite'),
@@ -97,8 +97,10 @@ $(document).ready(function () {
 
                 this.granny.waterFall(water);
             }, this);
-            
-            // loop through the models in the cannons collection
+        },
+        
+        
+        renderCannons: function (ctx) {
             _(this.bowl.cannons.models).each(function (cannon) {
                 var cannonImg = cannon.get('image'),
                     cannonX = cannon.get('positionX'),
@@ -107,11 +109,9 @@ $(document).ready(function () {
                 ctx.drawImage(cannonImg, cannonX, cannonY);
 
                 this.bowl.cannonFall(cannon);
-            }, this);           
-
-            this.move();
+            }, this);
         },
-        
+                
 
         keydown: function (ev) {        
             // first keydown
@@ -177,7 +177,7 @@ $(document).ready(function () {
         },
         
         
-        reset: function () {
+        endTurn: function () {
             this.granny.waters.reset();
             this.bowl.cannons.reset();
             

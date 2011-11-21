@@ -7,7 +7,6 @@ $(document).ready(function () {
         defaults: {
             name: 'water',
             speed: 6,
-            maxDropRate: 10,
             positionX: 50,
             positionY: 100,
             width: 22,

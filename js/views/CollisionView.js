@@ -83,7 +83,7 @@ $(document).ready(function () {
                 // catching zone
                 if (waterY >= bowlY) {
 
-                    // catched
+                    // caught
                     if (waterX + waterWidth >= bowlX && waterX <= bowlX + bowlWidth) {
                         water.trigger('catchWater', water);
                     }
