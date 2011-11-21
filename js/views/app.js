@@ -1,1 +1,0 @@
-$(document).ready(function () {    window.granny = window.granny || {};    var worldView = new granny.WorldView();});
