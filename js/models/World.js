@@ -12,7 +12,7 @@ $(document).ready(function () {
             height: $('#canvas').height(),
             ctx: document.getElementById('canvas').getContext('2d'),
             refreshRate: 1000 / 60, // lower = more fluid (and more CPU consuming)
-            sound: true,
+            audio: true,
             stage: 'stage1'
         },
 

@@ -10,8 +10,9 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'play', 'pause', 'intro', 'stage1', 'render', 'renderWaters', 'renderCannons', 
-                'singleKeyDown', 'keydown', 'keyup', 'endTurn', 'move');
+            _.bindAll(this, 'play', 'pause', 'preStage', 'intro', 'stage1', 
+                'render', 'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 
+                'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions');
             
             this.model = granny.World;
 
@@ -23,8 +24,7 @@ $(document).ready(function () {
             this.model.bind('singleKeyDown', this.singleKeyDown);
             
             $(document).on('keydown', this.keydown);
-            $(document).on('keyup', this.keyup);
-            
+            $(document).on('keyup', this.keyup);            
 
             // cache the images
             _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 
@@ -34,7 +34,7 @@ $(document).ready(function () {
             });
 
             // start the rendering loop
-            this.play();         
+            this.preStage();         
             
         },
         
@@ -48,13 +48,36 @@ $(document).ready(function () {
         },
        
        
-        pause: function () {
+        pause: function (miliseconds) {
+            var that = this;
+            
             cancelRequestAnimFrame(this.loop);
+            console.log(miliseconds);
+            if (miliseconds) {
+                setTimeout(that.play, miliseconds);
+            }
         },
         
         
         render: function (stage) {
             this[stage]();
+        },
+        
+        
+        preStage: function () {
+            var stage = this.model.get('stage');
+            
+            switch (stage) {
+                case 'intro':                    
+                    break;
+                
+                case 'stage1':
+                    this.audio = new granny.AudioView();
+                    // this.collisions = new granny.CollisionView();
+                    break;
+            }
+            
+            this.play();
         },
         
         
@@ -66,7 +89,7 @@ $(document).ready(function () {
             ctx.fillStyle = "#000";  
             ctx.fillRect (0, 0, width, height);
         },
-        
+
         
         stage1: function () {
             var ctx = this.model.get('ctx'),
@@ -119,7 +142,8 @@ $(document).ready(function () {
 
                 ctx.drawImage(waterImg, waterX, waterY);
 
-                this.granny.waterFall(water);
+                this.granny.fallWater(water);
+                this.checkWaterCollisions(water);
             }, this);
         },
         
@@ -132,7 +156,8 @@ $(document).ready(function () {
 
                 ctx.drawImage(cannonImg, cannonX, cannonY);
 
-                this.bowl.cannonFall(cannon);
+                this.bowl.fallCannon(cannon);
+                this.checkCannonCollisions(cannon);
             }, this);
         },
                 
@@ -192,16 +217,79 @@ $(document).ready(function () {
                             break;
                     }
                 }
-            }, this);            
+            }, this);
         },
         
         
         endTurn: function () {
-            this.granny.waters.reset();
-            this.bowl.cannons.reset();
+            // var ctx = this.model.get('ctx');
+            this.event_aggregator.trigger('end:turn');
             
-            this.granny.model.reset(['positionX', 'currentDirection', 'speed']);
-            this.bowl.model.reset(['positionX', 'speed']);
+            this.pause(2000);
+        },
+        
+        
+        checkCannonCollisions: function (cannon) {
+            var cannonX = cannon.get('positionX'),
+                cannonY = cannon.get('positionY'),
+                cannonHeight = cannon.get('height'),
+                cannonWidth = cannon.get('width'),
+                grannyWidth = this.granny.model.get('width'),
+                grannyHeight = this.granny.model.get('height'),
+                grannyX = this.granny.model.get('positionX'),
+                grannyY = this.granny.model.get('positionY'),
+                canLeft = this.granny.model.get('currentDirection') === 'left' ? 70 : 0,
+                canRight = this.granny.model.get('currentDirection') === 'right' ? -70 : 0;
+                
+            // on its way up
+            if (cannonY > 0 - cannonHeight) {
+
+                // granny hit zone
+                if (cannonY < grannyY + (grannyHeight / 2)) {
+                
+                    // hits
+                    if (cannonX  + cannonWidth >= grannyX + canLeft && cannonX  <= grannyX + grannyWidth + canRight) {
+                        this.event_aggregator.trigger('kill:granny', cannon);
+                    }
+                    
+                }
+                
+            // miss
+            } else {
+                this.event_aggregator.trigger('miss:cannon', cannon);
+            }                
+        },
+
+        
+        checkWaterCollisions: function (water) {        
+            var worldHeight = this.model.get('height'),
+                bowlX = this.bowl.model.get('positionX'),
+                bowlY = this.bowl.model.get('positionY'),
+                bowlWidth = this.bowl.model.get('width'),
+                waterX = water.get('positionX'),
+                waterY = water.get('positionY'),
+                waterWidth = water.get('width'),
+                waterHeight = water.get('height');
+
+            // on its way down
+            if (waterY + waterHeight < worldHeight) {
+                
+                // catching zone
+                if (waterY >= bowlY) {
+
+                    // caught
+                    if (waterX + waterWidth >= bowlX && waterX <= bowlX + bowlWidth) {
+                        // water.trigger('catchWater', water);
+                        this.event_aggregator.trigger('catch:water', water);
+                    }
+                    
+                }
+                
+            // didn't catch it    
+            } else {
+                // water.trigger('missWater', water);
+                this.event_aggregator.trigger('miss:water', water);
+            }            
         }
         
     });
