@@ -3,15 +3,15 @@ $(document).ready(function () {
 
     window.granny = window.granny || {};
 
-    granny.BowlSingleton = new (Backbone.View.extend({
+    granny.BowlView = Backbone.View.extend({
 
         // entry point
         initialize: function () {
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'moveLeft', 'moveRight', 'addCannon', 'cannonFall', 'addEnergy', 'loseLife');
+            _.bindAll(this, 'moveLeft', 'moveRight', 'addCannon', 'cannonFall', 'addEnergy', 'kill');
 
             this.world = granny.World;
-
+            
             // instance the models
             this.model = new granny.Bowl();
             this.cannons = new granny.Cannons();
@@ -89,7 +89,7 @@ $(document).ready(function () {
         },
 
 
-        loseLife: function (n) {
+        kill: function (n) {
             var lifes = this.model.get('lifes');
 
             lifes -= n;
@@ -104,5 +104,5 @@ $(document).ready(function () {
             console.log('bowl died! lifes: ' + this.model.get('lifes'));
         }
 
-    }))();
+    });
 });

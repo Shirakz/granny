@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     window.granny = window.granny || {}; 
     
-    granny.CollisionView = new (Backbone.View.extend({
+    granny.CollisionView = Backbone.View.extend({
     
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
@@ -11,7 +11,8 @@ $(document).ready(function () {
             
             // reference the singletons locally
             this.world = granny.World;
-            this.bowl = granny.BowlSingleton;
+            this.bowl = granny.BowlView;
+
             this.granny = granny.GrannySingleton;
 
             this.granny.waters.bind('change:positionY', this.checkWater);
@@ -57,7 +58,7 @@ $(document).ready(function () {
         
         
         hitCannon: function (cannon) {
-            this.granny.loseLife(1);
+            this.granny.kill(1);
             cannon.destroy();
         },
         
@@ -104,10 +105,10 @@ $(document).ready(function () {
         
         
         missWater: function (water) {
-            this.bowl.loseLife(1);
+            this.bowl.kill(1);
             water.destroy();
         }
     
-    }))();
+    });
     
 });

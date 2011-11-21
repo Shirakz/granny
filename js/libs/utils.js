@@ -1,18 +1,9 @@
 $(function () {
     
-    window.granny = window.granny || {};
+    // window.granny = window.granny || {};
     
-    granny.utils = {
-        toggle: function (value, t1, t2) {
-            if (value === t1) {
-                value = t2;
-            } else if  (value === t2) {
-                value = t1;
-            } 
-
-            return value;
-        }
-    };
+    // events across multiple views
+    Backbone.View.prototype.event_aggregator = _.extend({}, Backbone.Events);
     
     _.mixin({
         capitalize: function (string) {

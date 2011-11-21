@@ -3,12 +3,12 @@ $(document).ready(function () {
 
     window.granny = window.granny || {}; 
     
-    granny.GrannySingleton = new (Backbone.View.extend({
+    granny.GrannyView = Backbone.View.extend({
         
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'moveLeft', 'moveRight', 'addWater', 'waterFall', 'loseLife');
+            _.bindAll(this, 'moveLeft', 'moveRight', 'addWater', 'waterFall', 'kill');
             
             this.world = granny.World;
 
@@ -17,9 +17,6 @@ $(document).ready(function () {
             this.waters = new granny.Waters();            
 
         },
-
-
-
         
         
         moveLeft: function () {
@@ -81,7 +78,7 @@ $(document).ready(function () {
         },
         
         
-        loseLife: function (n) {            
+        kill: function (n) {            
             var lifes = this.model.get('lifes');
             
             lifes -= n;
@@ -96,5 +93,5 @@ $(document).ready(function () {
             console.log('granny died! lifes: ' + this.model.get('lifes'));            
         }
         
-    }))();
+    });
 });

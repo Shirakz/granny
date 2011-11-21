@@ -10,42 +10,66 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'animate', 'render', 'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 'keyup', 'pause', 'endTurn', 'move');
+            _.bindAll(this, 'play', 'pause', 'intro', 'stage1', 'render', 'renderWaters', 'renderCannons', 
+                'singleKeyDown', 'keydown', 'keyup', 'endTurn', 'move');
             
-            // reference the singletons locally
             this.model = granny.World;
-            this.bowl = granny.BowlSingleton;
-            this.granny = granny.GrannySingleton;
-                  
+
+            this.bowl = new granny.BowlView();
+            this.granny = new granny.GrannyView();
+
             this.granny.model.bind('change:lifes', this.endTurn);
             this.bowl.model.bind('change:lifes', this.endTurn);
             this.model.bind('singleKeyDown', this.singleKeyDown);
+            
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.keyup);
             
 
             // cache the images
-            _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
+            _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 
+                'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
                 var img = new Image();
                     img.src = 'img/' + item;
             });
 
             // start the rendering loop
-            this.animate();         
+            this.play();         
             
         },
         
         
         // rendering loop
-        animate: function () {
-            this.loop = requestAnimFrame(this.animate);
-            this.render();
+        play: function () {
+            var stage = this.model.get('stage');
+            
+            this.loop = requestAnimFrame(this.play);
+            this.render(stage);
+        },
+       
+       
+        pause: function () {
+            cancelRequestAnimFrame(this.loop);
         },
         
-       
-        render: function () {
-            var refreshTime = this.model.get('refreshRate'), 
-                ctx = this.model.get('ctx'),
+        
+        render: function (stage) {
+            this[stage]();
+        },
+        
+        
+        intro: function () {
+            var ctx = this.model.get('ctx'),
+                width = this.model.get('width'),
+                height = this.model.get('height');
+            
+            ctx.fillStyle = "#000";  
+            ctx.fillRect (0, 0, width, height);
+        },
+        
+        
+        stage1: function () {
+            var ctx = this.model.get('ctx'),
                 bg = this.model.get('background'),
                 bowlEnergy = this.bowl.model.get('energy'),
                 bowlImg = this.bowl.model.get('image' + bowlEnergy),
@@ -117,9 +141,9 @@ $(document).ready(function () {
             // first keydown
             if (!this.model.pressedKeys[ev.keyCode]) {
                 this.model.trigger('singleKeyDown', ev);
+                
+                this.model.pressedKeys[ev.keyCode] = true;
             }
-            
-            this.model.pressedKeys[ev.keyCode] = true;
         },
 
 
@@ -169,11 +193,6 @@ $(document).ready(function () {
                     }
                 }
             }, this);            
-        },
-        
-        
-        pause: function () {
-            cancelRequestAnimFrame(this.loop);
         },
         
         
