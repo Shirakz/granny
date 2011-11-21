@@ -5,18 +5,25 @@ $(document).ready(function () {
     
     granny.WorldView = Backbone.View.extend({
         
+        loop: false,
+        
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'render', 'animate', 'end');
+            _.bindAll(this, 'render', 'animate', 'singleKeyDown', 'keydown', 'keyup', 'pause', 'reset', 'move');
             
             // reference the singletons locally
             this.model = granny.World;
             this.bowl = granny.BowlSingleton;
             this.granny = granny.GrannySingleton;
                   
-            this.granny.waters.bind('missWater', this.end);
-                  
+            // this.granny.model.bind('change:lifes', this.pause);
+            this.granny.model.bind('change:lifes', this.reset);
+            this.bowl.model.bind('change:lifes', this.reset);
+            this.model.bind('singleKeyDown', this.singleKeyDown);
+            $(document).on('keydown', this.keydown);
+            $(document).on('keyup', this.keyup);
+            
             this.bowl.model.set({
                 positionY: this.model.get('height') - this.bowl.model.get('height') - 10
             });
@@ -28,7 +35,16 @@ $(document).ready(function () {
             });
 
             // start the rendering loop
-            this.animate();            
+            this.animate();         
+
+                this.move();
+        },
+        
+        
+        // rendering loop
+        animate: function () {
+            this.loop = requestAnimFrame(this.animate);
+            this.render();
         },
         
         
@@ -41,37 +57,35 @@ $(document).ready(function () {
                 bowlImg = this.bowl.model.get('image' + bowlEnergy),
                 bowlX = this.bowl.model.get('positionX'),
                 bowlY = this.bowl.model.get('positionY'),
-                grannyDirection = (function (str) {return str.charAt(0).toUpperCase() + str.slice(1); })(this.granny.model.get('currentDirection')), // capitalize the first letter
+                grannyDirection = _(this.granny.model.get('currentDirection')).capitalize(),
                 grannyImg = this.granny.model.get('image' + grannyDirection),
                 grannyX = this.granny.model.get('positionX'),
                 grannyY = this.granny.model.get('positionY');    
                 
             // ctx.globalAlpha = 0.02;
-            
-            ctx.drawImage(bg, 0, 0);
-
-            // ctx.globalAlpha = 1;
-            
+            ctx.drawImage(bg, 0, 0);         
             ctx.drawImage(grannyImg, grannyX, grannyY);
-
             ctx.drawImage(bowlImg, bowlX, bowlY);
             
+            // this.granny.move();
+            
             _(this.granny.waters.models).each(function (water) {
-                var spriteCounter,
-                    waterImg,
+                var waterImg,
                     waterSprite = water.get('waterSprite'),
                     waterX = water.get('positionX'),
                     waterY = water.get('positionY'),
-                    frameSwitchSpeed = water.get('frameSwitchSpeed');
+                    frameSwitchSpeed = water.get('frameSwitchSpeed'),
+                    spriteCounter = water.get('spriteCounter');
                 
                 water.set({
-                    spriteCounter: water.get('spriteCounter') + 1
+                    spriteCounter: spriteCounter + 1
                 });
-                    
+
                 // switch the sprite every X frames
-                if ((water.get('spriteCounter') % frameSwitchSpeed) === 0) {
+                if (spriteCounter >= frameSwitchSpeed) {
                     water.set({
-                        waterSprite: waterSprite === 1 ? 2 : 1 
+                        spriteCounter: 0,
+                        waterSprite: waterSprite === 1 ? 2 : 1
                     });
                     
                     waterSprite = waterSprite === 1 ? 2 : 1;
@@ -81,6 +95,7 @@ $(document).ready(function () {
 
                 ctx.drawImage(waterImg, waterX, waterY);
 
+                this.granny.waterFall(water);
             }, this);
             
             // loop through the models in the cannons collection
@@ -88,27 +103,86 @@ $(document).ready(function () {
                 var cannonImg = cannon.get('image'),
                     cannonX = cannon.get('positionX'),
                     cannonY = cannon.get('positionY');
-                    
+
                 ctx.drawImage(cannonImg, cannonX, cannonY);
-            }, this);             
+
+                this.bowl.cannonFall(cannon);
+            }, this);           
+
+            this.move();
         },
         
-        
-        // rendering loop
-        animate: function () {
-            requestAnimFrame(this.animate);
-            this.render();
-        },
-        
-        
-        end: function () {
-            _(this.granny.waters).each(function (water) {
-                water.destroy();
-            });
+
+        keydown: function (ev) {        
+            // first keydown
+            if (!this.model.pressedKeys[ev.keyCode]) {
+                this.model.trigger('singleKeyDown', ev);
+            }
             
-            _(this.bowl.cannons).each(function (cannon) {
-                cannon.destroy();
-            });
+            this.model.pressedKeys[ev.keyCode] = true;
+        },
+
+
+        keyup: function (ev) {        
+            this.model.pressedKeys[ev.keyCode] = false;            
+        },
+        
+        
+        singleKeyDown: function (ev) {
+            switch (ev.keyCode) {
+                // s
+                case 83:
+                    this.granny.addWater();
+                    break;
+                    
+                // ^ (up)
+                case 38:
+                    this.bowl.addCannon();
+                    break;
+            }
+        },
+        
+        
+        move: function () {
+            _(this.model.pressedKeys).each(function (val, key) {
+                if (this.model.pressedKeys[key]) {
+                    switch (key) {
+                        // a
+                        case '65':
+                            this.granny.moveLeft();
+                            break;
+                            
+                        // d
+                        case '68':
+                            this.granny.moveRight();
+                            break;                          
+                            
+                         // <- (left)
+                        case '37':
+                            this.bowl.moveLeft();
+                            break;
+
+                        // -> (right)
+                        case '39':
+                            this.bowl.moveRight();
+                            break;
+                    }
+                }
+            }, this);            
+        },
+        
+        
+        pause: function () {
+            cancelRequestAnimFrame(this.loop);
+        },
+        
+        
+        reset: function () {
+            this.granny.waters.reset();
+            this.bowl.cannons.reset();
+            
+            this.granny.model.reset(['positionX', 'currentDirection', 'speed']);
+            this.bowl.model.reset(['positionX', 'speed']);
         }
         
     });

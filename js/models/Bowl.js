@@ -5,6 +5,7 @@ $(document).ready(function () {
     granny.Bowl = Backbone.Model.extend({
     
         defaults: {
+            name: 'bowl',
             lifes: 3,
             speed: 12,
             energy: 0,
@@ -50,6 +51,17 @@ $(document).ready(function () {
             }
             
             return error;
+        },
+        
+        
+        reset: function (attrs) {
+            var that = this;
+            
+            _(attrs).each(function (attr) {
+                if (that.defaults.hasOwnProperty(attr)) {
+                    that.attributes[attr] = that.defaults[attr];
+                }
+            });
         }
         
     });

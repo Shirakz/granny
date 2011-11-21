@@ -5,6 +5,7 @@ $(document).ready(function () {
     granny.Granny = Backbone.Model.extend({
     
         defaults: {
+            name: 'granny',
             lifes: 3,
             speed: 7,
             width: 130,
@@ -20,6 +21,8 @@ $(document).ready(function () {
         initialize: function () {        
             var imageLeft = new Image(),
                 imageRight = new Image();
+                
+            _.bindAll(this, 'reset');
             
             imageLeft.src = 'img/granny_left.png';
             imageRight.src = 'img/granny_right.png';
@@ -28,6 +31,17 @@ $(document).ready(function () {
                 imageLeft: imageLeft,
                 imageRight: imageRight
             });
+        },
+        
+        
+        // re-do this function using model.set instead of changing
+        // the properties directly
+        reset: function (attrs) {
+            _(attrs).each(function (attr) {
+                if (this.defaults.hasOwnProperty(attr)) {
+                    this.attributes[attr] = this.defaults[attr];
+                }
+            }, this);
         }
         
     });

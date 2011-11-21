@@ -5,6 +5,7 @@ $(document).ready(function () {
     granny.Cannon = Backbone.Model.extend({    
     
         defaults: {
+            name: 'cannon',
             speed: 9,
             width: 130,
             height: 169,

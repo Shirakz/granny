@@ -5,14 +5,16 @@ $(document).ready(function () {
     granny.Water = Backbone.Model.extend({
     
         defaults: {
+            name: 'water',
             speed: 6,
+            maxDropRate: 10,
             positionX: 50,
             positionY: 100,
             width: 22,
             height: 43,
             waterSprite: 1,
             spriteCounter: 0,
-            frameSwitchSpeed: 5, // lower = faster
+            frameSwitchSpeed: 20, // lower = faster
             addSound: $('#water-drop').get(0)
         },
         
