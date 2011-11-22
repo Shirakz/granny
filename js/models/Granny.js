@@ -8,10 +8,11 @@ $(document).ready(function () {
             name: 'granny',
             lifes: 3,
             speed: 7,
-            width: 130,
-            height: 169,
+            width: 96,
+            height: 136,
+            canWidth: 45,
             positionX: 350,
-            positionY: 15,
+            positionY: 29,
             marginLeft: 50,
             marginRight: 50,
             currentDirection: 'left'
@@ -20,17 +21,31 @@ $(document).ready(function () {
         
         initialize: function () {        
             var imageLeft = new Image(),
-                imageRight = new Image();
+                imageRight = new Image(),
+                winnerImage = new Image();
                 
             _.bindAll(this, 'reset');
             
             imageLeft.src = 'img/granny_left.png';
             imageRight.src = 'img/granny_right.png';
+            winnerImage.src = 'img/winner-granny.png';            
             
             this.set({
                 imageLeft: imageLeft,
-                imageRight: imageRight
+                imageRight: imageRight,
+                winnerImage: winnerImage
             });
+        },
+        
+        
+        validate: function (obj) {
+            var error = null;
+            
+            if (obj.lifes < 0) {
+                error = 'Can\'t go under 0 lifes';
+            }
+            
+            return error;
         },
         
         

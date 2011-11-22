@@ -89,10 +89,6 @@ granny.GrannyView = Backbone.View.extend({
     
     kill: function () {            
         var lifes = this.model.get('lifes') -1;
-
-        if (lifes <= 0) {
-            console.log('granny lost :(');
-        }
         
         this.model.set({lifes: lifes});
         

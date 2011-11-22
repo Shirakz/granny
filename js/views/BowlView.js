@@ -103,11 +103,7 @@ granny.BowlView = Backbone.View.extend({
 
     kill: function () {
         var lifes = this.model.get('lifes') - 1;
-
-        if (!lifes <= 0) {
-            console.log('bowl lost :(');
-        }
-
+        
         this.model.set({lifes: lifes});
 
         console.log('bowl died! lifes: ' + this.model.get('lifes'));
@@ -116,6 +112,6 @@ granny.BowlView = Backbone.View.extend({
     
     endTurn: function () {
         this.cannons.reset();
-        this.model.reset(['positionX', 'speed']);
+        this.model.reset(['positionX', 'speed', 'energy']);
     }
 });

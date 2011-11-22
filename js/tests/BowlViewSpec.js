@@ -1,0 +1,3 @@
+describe('Bowl view', function () {
+    
+});

@@ -7,7 +7,7 @@ $(document).ready(function () {
         defaults: {
             name: 'cannon',
             speed: 9,
-            width: 130,
+            width: 120,
             height: 169,
             positionX: 50,
             positionY: 350,
@@ -17,9 +17,15 @@ $(document).ready(function () {
         
         
         initialize: function () {        
-            var image = new Image();
+            var image = new Image(),
+                that = this;
             
-            image.src = 'img/cannon.png';
+            image.src = 'img/water-fall-2.png';
+            
+            image.onload = function () {
+                that.set({width: this.width});
+                that.set({height: this.height});
+            };
             
             this.set({
                 image: image

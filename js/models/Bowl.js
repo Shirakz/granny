@@ -6,7 +6,7 @@ $(document).ready(function () {
     
         defaults: {
             name: 'bowl',
-            lifes: 3,
+            lifes: 1,
             speed: 12,
             energy: 0,
             width: 120,
@@ -19,12 +19,13 @@ $(document).ready(function () {
         
         
         initialize: function () {        
-            var image0 = new Image(),
+            var image0 = new Image();
                 image1 = new Image(),
                 image2 = new Image(),
                 image3 = new Image(),
                 image4 = new Image(),
-                image5 = new Image();
+                image5 = new Image(),
+                winnerImage = new Image();
                 
             image0.src = 'img/bowl0.png';
             image1.src = 'img/bowl1.png';
@@ -32,6 +33,7 @@ $(document).ready(function () {
             image3.src = 'img/bowl3.png';
             image4.src = 'img/bowl4.png';
             image5.src = 'img/bowl5.png';
+            winnerImage.src = 'img/winner-bowl.png';
             
             this.set({
                 image0: image0,
@@ -39,15 +41,21 @@ $(document).ready(function () {
                 image2: image2,
                 image3: image3,
                 image4: image4,
-                image5: image5
+                image5: image5,
+                winnerImage: winnerImage
             });
         },
         
         
         validate: function (obj) {
             var error = null;
+            
             if (obj.energy > 5) {
                 error = 'Can\'t go over 5 energy';
+            }
+            
+            if (obj.lifes < 0) {
+                error = 'Can\'t go under 0 lifes';
             }
             
             return error;

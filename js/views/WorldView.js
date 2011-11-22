@@ -10,8 +10,8 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'play', 'pause', 'preStage', 'intro', 'stage1', 
-                'render', 'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 
+            _.bindAll(this, 'play', 'pause', 'preStage', 'intro', 'stage1', 'winner',
+                'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 
                 'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions');
             
             this.model = granny.World;
@@ -22,6 +22,7 @@ $(document).ready(function () {
             this.granny.model.bind('change:lifes', this.endTurn);
             this.bowl.model.bind('change:lifes', this.endTurn);
             this.model.bind('singleKeyDown', this.singleKeyDown);
+            this.event_aggregator.bind('end:game', this.endGame);
             
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.keyup);            
@@ -30,7 +31,7 @@ $(document).ready(function () {
             _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 
                 'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
                 var img = new Image();
-                    img.src = 'img/' + item;
+                img.src = 'img/' + item;
             });
 
             // start the rendering loop
@@ -42,25 +43,25 @@ $(document).ready(function () {
         // rendering loop
         play: function () {
             var stage = this.model.get('stage');
-            
+
             this.loop = requestAnimFrame(this.play);
-            this.render(stage);
+            this[stage]();
         },
        
        
-        pause: function (miliseconds) {
+        pause: function (miliseconds, callback) {
             var that = this;
             
             cancelRequestAnimFrame(this.loop);
-            console.log(miliseconds);
             if (miliseconds) {
-                setTimeout(that.play, miliseconds);
+                setTimeout(function () {
+                    if (callback) {
+                        callback();
+                    } else {
+                        that.play();
+                    }
+                }, miliseconds);
             }
-        },
-        
-        
-        render: function (stage) {
-            this[stage]();
         },
         
         
@@ -221,11 +222,49 @@ $(document).ready(function () {
         },
         
         
-        endTurn: function () {
-            // var ctx = this.model.get('ctx');
-            this.event_aggregator.trigger('end:turn');
+        endTurn: function (ev) {
+            var lifes = ev.get('lifes'),
+                name = ev.get('name'),
+                winner,
+                that = this;
             
-            this.pause(2000);
+            if (lifes > 0) {
+                this.event_aggregator.trigger('end:turn');
+                this.pause(2000);
+            } else {
+                winner = name === 'granny' ? 'bowl' : 'granny';
+                
+                console.log(name + ' lost :(');
+                
+                this.pause(2000, function () {
+
+                    that.winner(ev);
+                });
+            }
+            
+        },
+        
+        
+        // endGame: function (model) {
+            // var that = this,
+                // name = model.get('name'),
+                // winner = name === 'granny' ? 'bowl' : 'granny';
+                
+            // console.log(name + ' lost :(');
+            
+            // this.pause(2000, function () {
+                // that.winner(winner);
+            // });
+        // },
+        
+        
+        winner: function (winner) {
+            var ctx = this.model.get('ctx'),
+                bg = this[winner.get('name')].model.get('winnerImage');
+            
+            bg.onload = function () {
+                ctx.drawImage(bg, 0, 0);
+            };
         },
         
         
@@ -238,8 +277,8 @@ $(document).ready(function () {
                 grannyHeight = this.granny.model.get('height'),
                 grannyX = this.granny.model.get('positionX'),
                 grannyY = this.granny.model.get('positionY'),
-                canLeft = this.granny.model.get('currentDirection') === 'left' ? 70 : 0,
-                canRight = this.granny.model.get('currentDirection') === 'right' ? -70 : 0;
+                canLeft = this.granny.model.get('currentDirection') === 'left' ? this.granny.model.get('canWidth') : 0,
+                canRight = this.granny.model.get('currentDirection') === 'right' ? -this.granny.model.get('canWidth') : 0;
                 
             // on its way up
             if (cannonY > 0 - cannonHeight) {
