@@ -237,34 +237,18 @@ $(document).ready(function () {
                 console.log(name + ' lost :(');
                 
                 this.pause(2000, function () {
-
-                    that.winner(ev);
+                    that.winner(winner);
                 });
             }
             
         },
         
         
-        // endGame: function (model) {
-            // var that = this,
-                // name = model.get('name'),
-                // winner = name === 'granny' ? 'bowl' : 'granny';
-                
-            // console.log(name + ' lost :(');
-            
-            // this.pause(2000, function () {
-                // that.winner(winner);
-            // });
-        // },
-        
-        
         winner: function (winner) {
             var ctx = this.model.get('ctx'),
-                bg = this[winner.get('name')].model.get('winnerImage');
-            
-            bg.onload = function () {
+                bg = this[winner].model.get('winnerImage');
+
                 ctx.drawImage(bg, 0, 0);
-            };
         },
         
         

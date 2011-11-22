@@ -6,7 +6,7 @@ $(document).ready(function () {
     
         defaults: {
             name: 'bowl',
-            lifes: 1,
+            lifes: 3,
             speed: 12,
             energy: 0,
             width: 120,
