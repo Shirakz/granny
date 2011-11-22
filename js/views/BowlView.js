@@ -15,11 +15,12 @@ granny.BowlView = Backbone.View.extend({
         this.cannons = new granny.Cannons();
 
         this.model.set({
-            positionY: this.world.get('height') - this.model.get('height') - 10
+            positionY: this.world.get('height') - this.model.get('height') + 5
         });
 
         this.event_aggregator.bind('catch:water', this.catchWater);
         this.event_aggregator.bind('miss:water', this.kill);
+        this.event_aggregator.bind('add:cannon', this.addCannon);
         this.event_aggregator.bind('miss:cannon', this.missCannon);
         this.event_aggregator.bind('end:turn', this.endTurn);
         

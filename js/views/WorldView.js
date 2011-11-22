@@ -7,12 +7,17 @@ $(document).ready(function () {
         
         loop: false,
         
+        
+        currentEvents: {}, // event aggregator events will be stored here when pause is called
+        
+        
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
             _.bindAll(this, 'play', 'pause', 'preStage', 'intro', 'stage1', 'winner',
                 'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 
-                'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions');
+                'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions',
+                'removeGlobalEvents', 'restoreGlobalEvents');
             
             this.model = granny.World;
 
@@ -31,6 +36,7 @@ $(document).ready(function () {
             _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 
                 'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
                 var img = new Image();
+                
                 img.src = 'img/' + item;
             });
 
@@ -53,11 +59,14 @@ $(document).ready(function () {
             var that = this;
             
             cancelRequestAnimFrame(this.loop);
+            this.removeGlobalEvents();
+            
             if (miliseconds) {
                 setTimeout(function () {
                     if (callback) {
                         callback();
                     } else {
+                        that.restoreGlobalEvents();
                         that.play();
                     }
                 }, miliseconds);
@@ -74,7 +83,6 @@ $(document).ready(function () {
                 
                 case 'stage1':
                     this.audio = new granny.AudioView();
-                    // this.collisions = new granny.CollisionView();
                     break;
             }
             
@@ -104,8 +112,8 @@ $(document).ready(function () {
                 grannyX = this.granny.model.get('positionX'),
                 grannyY = this.granny.model.get('positionY');    
                 
-            // ctx.globalAlpha = 0.02;
-            ctx.drawImage(bg, 0, 0);         
+            // ctx.globalAlpha = 0.01;
+            ctx.drawImage(bg, 0, 0);      
             ctx.drawImage(grannyImg, grannyX, grannyY);
             ctx.drawImage(bowlImg, bowlX, bowlY);
             
@@ -182,12 +190,14 @@ $(document).ready(function () {
             switch (ev.keyCode) {
                 // s
                 case 83:
-                    this.granny.addWater();
+                    this.event_aggregator.trigger('add:water');
+                    // this.granny.addWater();
                     break;
                     
                 // ^ (up)
                 case 38:
-                    this.bowl.addCannon();
+                    this.event_aggregator.trigger('add:cannon');
+                    // this.bowl.addCannon();
                     break;
             }
         },
@@ -313,6 +323,17 @@ $(document).ready(function () {
                 // water.trigger('missWater', water);
                 this.event_aggregator.trigger('miss:water', water);
             }            
+        },
+        
+        
+        restoreGlobalEvents: function () {
+            this.event_aggregator = $.extend(this.event_aggregator, this.currentEvents);
+        },
+        
+        
+        removeGlobalEvents: function () {
+            this.currentEvents = $.extend({}, this.event_aggregator);
+            this.event_aggregator.unbind();
         }
         
     });

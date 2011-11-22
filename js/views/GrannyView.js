@@ -15,6 +15,7 @@ granny.GrannyView = Backbone.View.extend({
         this.waters = new granny.Waters();       
 
         this.event_aggregator.bind('kill:granny', this.kill);
+        this.event_aggregator.bind('add:water', this.addWater);
         this.event_aggregator.bind('miss:water', this.destroyWater);
         this.event_aggregator.bind('catch:water', this.destroyWater);
         this.event_aggregator.bind('end:turn', this.endTurn);
@@ -62,11 +63,11 @@ granny.GrannyView = Backbone.View.extend({
     addWater: function () {        
         var water = new granny.Water(),
             // correct the position of the water depending on where she's looking at
-        correctionX = this.model.get('currentDirection') === 'left' ? 20 : -115;
+        correctionX = this.model.get('currentDirection') === 'left' ? 17 : -95;
 
         water.set({
             positionX: this.model.get('positionX') - correctionX,
-            positionY: this.model.get('positionY') + this.model.get('height') - 50
+            positionY: this.model.get('positionY') + this.model.get('height') - 10
         });  
         
         this.waters.add(water);
