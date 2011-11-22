@@ -20,7 +20,7 @@ $(document).ready(function () {
             var image = new Image(),
                 that = this;
             
-            image.src = 'img/water-fall-2.png';
+            image.src = 'img/cannon.png';
             
             image.onload = function () {
                 that.set({width: this.width});

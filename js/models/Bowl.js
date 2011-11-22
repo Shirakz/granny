@@ -15,7 +15,8 @@ $(document).ready(function () {
             positionY: 500,
             marginLeft: 0,
             marginRight: 0,
-            currentImage: 0
+            currentImage: 0,
+            idAnimation: false
         },
         
         
