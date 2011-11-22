@@ -19,7 +19,8 @@ granny.GrannyView = Backbone.View.extend({
         this.event_aggregator.bind('miss:water', this.destroyWater);
         this.event_aggregator.bind('catch:water', this.destroyWater);
         this.event_aggregator.bind('end:turn', this.endTurn);
-
+        this.event_aggregator.bind('key:a', this.moveLeft);
+        this.event_aggregator.bind('key:d', this.moveRight);
     },
     
     

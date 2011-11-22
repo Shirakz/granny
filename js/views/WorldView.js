@@ -8,13 +8,13 @@ $(document).ready(function () {
         loop: false,
         
         
-        currentEvents: {}, // event aggregator events will be stored here when pause is called
+        storedGlobalEvents: {}, // event aggregator events will be stored here when pause is called
         
         
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'play', 'pause', 'preStage', 'intro', 'stage1', 'winner',
+            _.bindAll(this, 'play', 'pause', 'preStage', 'stageIntro', 'stage1', 'winner',
                 'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 
                 'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions',
                 'removeGlobalEvents', 'restoreGlobalEvents');
@@ -33,7 +33,7 @@ $(document).ready(function () {
             $(document).on('keyup', this.keyup);            
 
             // cache the images
-            _(['background.png', 'bowl0.png', 'bowl1.png', 'bowl2.png', 'bowl3.png', 'bowl4.png', 'bowl5.png', 
+            _(['stage-intro-bg.png', 'stage1-bg.png', 'bowl-00.png', 'bowl-01.png', 'bowl-02.png', 'bowl-03.png', 'bowl-04.png', 'bowl-05.png', 'bowl-06.png', 'bowl-07.png', 
                 'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
                 var img = new Image();
                 
@@ -48,7 +48,7 @@ $(document).ready(function () {
         
         // rendering loop
         play: function () {
-            var stage = this.model.get('stage');
+            var stage = this.model.get('stage'); // get the 
 
             this.loop = requestAnimFrame(this.play);
             this[stage]();
@@ -78,11 +78,17 @@ $(document).ready(function () {
             var stage = this.model.get('stage');
             
             switch (stage) {
-                case 'intro':                    
-                    break;
+                case 'stageIntro':
                 
-                case 'stage1':
-                    this.audio = new granny.AudioView();
+                    this.removeGlobalEvents();
+                    
+                    // stage 1 preparation
+                    this.event_aggregator.bind('key:enter', function () {
+                        this.restoreGlobalEvents();
+                        this.audio = new granny.AudioView();
+                        this.model.set({stage: 'stage1'});
+                    }, this);
+                    
                     break;
             }
             
@@ -90,21 +96,26 @@ $(document).ready(function () {
         },
         
         
-        intro: function () {
+        stageIntro: function () {
             var ctx = this.model.get('ctx'),
+                bg = this.model.get('stageIntroBg'),
                 width = this.model.get('width'),
                 height = this.model.get('height');
             
-            ctx.fillStyle = "#000";  
-            ctx.fillRect (0, 0, width, height);
+            ctx.drawImage(bg, 0, 0);
+            
+            ctx.font = '20px Times New Roman';  
+            ctx.fillStyle = '#404041';  
+            ctx.fillText('Press enter to play', 330, height/1.15); 
         },
 
         
         stage1: function () {
             var ctx = this.model.get('ctx'),
-                bg = this.model.get('background'),
+                bg = this.model.get('stage1Bg'),
                 bowlEnergy = this.bowl.model.get('energy'),
-                bowlImg = this.bowl.model.get('image' + bowlEnergy),
+                bowlCurrentImgName = this.bowl.model.get('currentImage'),
+                bowlImg = this.bowl.model.get('image' + bowlCurrentImgName),
                 bowlX = this.bowl.model.get('positionX'),
                 bowlY = this.bowl.model.get('positionY'),
                 grannyDirection = _(this.granny.model.get('currentDirection')).capitalize(),
@@ -113,10 +124,11 @@ $(document).ready(function () {
                 grannyY = this.granny.model.get('positionY');    
                 
             // ctx.globalAlpha = 0.01;
-            ctx.drawImage(bg, 0, 0);      
+            ctx.drawImage(bg, 0, 0);
             ctx.drawImage(grannyImg, grannyX, grannyY);
             ctx.drawImage(bowlImg, bowlX, bowlY);
             
+            // console.log(bowlCurrentImgName);
             this.renderWaters(ctx);
             this.renderCannons(ctx);
             
@@ -191,13 +203,21 @@ $(document).ready(function () {
                 // s
                 case 83:
                     this.event_aggregator.trigger('add:water');
-                    // this.granny.addWater();
                     break;
                     
                 // ^ (up)
                 case 38:
                     this.event_aggregator.trigger('add:cannon');
-                    // this.bowl.addCannon();
+                    break;
+                    
+                // return / enter key
+                case 13:
+                    this.event_aggregator.trigger('key:enter');
+                    break;
+                    
+                // spacebar
+                case 32:
+                    this.event_aggregator.trigger('key:spacebar');
                     break;
             }
         },
@@ -209,22 +229,22 @@ $(document).ready(function () {
                     switch (key) {
                         // a
                         case '65':
-                            this.granny.moveLeft();
+                            this.event_aggregator.trigger('key:a');
                             break;
                             
                         // d
                         case '68':
-                            this.granny.moveRight();
+                            this.event_aggregator.trigger('key:d');
                             break;                          
                             
                          // <- (left)
                         case '37':
-                            this.bowl.moveLeft();
+                            this.event_aggregator.trigger('key:leftarrow');
                             break;
 
                         // -> (right)
                         case '39':
-                            this.bowl.moveRight();
+                            this.event_aggregator.trigger('key:rightarrow');
                             break;
                     }
                 }
@@ -327,12 +347,12 @@ $(document).ready(function () {
         
         
         restoreGlobalEvents: function () {
-            this.event_aggregator = $.extend(this.event_aggregator, this.currentEvents);
+            this.event_aggregator = $.extend(this.event_aggregator, this.storedGlobalEvents);
         },
         
         
         removeGlobalEvents: function () {
-            this.currentEvents = $.extend({}, this.event_aggregator);
+            this.storedGlobalEvents = $.extend({}, this.event_aggregator);
             this.event_aggregator.unbind();
         }
         

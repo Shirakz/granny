@@ -14,7 +14,8 @@ $(document).ready(function () {
             positionX: 350,
             positionY: 500,
             marginLeft: 0,
-            marginRight: 0
+            marginRight: 0,
+            currentImage: 0
         },
         
         
@@ -25,14 +26,18 @@ $(document).ready(function () {
                 image3 = new Image(),
                 image4 = new Image(),
                 image5 = new Image(),
+                image6 = new Image(),
+                image7 = new Image(),
                 winnerImage = new Image();
                 
-            image0.src = 'img/bowl0.png';
-            image1.src = 'img/bowl1.png';
-            image2.src = 'img/bowl2.png';
-            image3.src = 'img/bowl3.png';
-            image4.src = 'img/bowl4.png';
-            image5.src = 'img/bowl5.png';
+            image0.src = 'img/bowl-00.png';
+            image1.src = 'img/bowl-01.png';
+            image2.src = 'img/bowl-02.png';
+            image3.src = 'img/bowl-03.png';
+            image4.src = 'img/bowl-04.png';
+            image5.src = 'img/bowl-05.png';
+            image6.src = 'img/bowl-06.png';
+            image7.src = 'img/bowl-07.png';
             winnerImage.src = 'img/winner-bowl.png';
             
             this.set({
@@ -42,6 +47,8 @@ $(document).ready(function () {
                 image3: image3,
                 image4: image4,
                 image5: image5,
+                image6: image6,
+                image7: image7,
                 winnerImage: winnerImage
             });
         },
@@ -56,6 +63,10 @@ $(document).ready(function () {
             
             if (obj.lifes < 0) {
                 error = 'Can\'t go under 0 lifes';
+            }
+            
+            if (obj.currentImage > 7) {
+                error = 'You can\'t go over image7';
             }
             
             return error;

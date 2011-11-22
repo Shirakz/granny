@@ -13,7 +13,7 @@ $(document).ready(function () {
             ctx: document.getElementById('canvas').getContext('2d'),
             refreshRate: 1000 / 60, // lower = more fluid (and more CPU consuming)
             audio: true,
-            stage: 'stage1'
+            stage: 'stageIntro'
         },
 
 
@@ -28,12 +28,15 @@ $(document).ready(function () {
         
         
         initialize: function () {        
-            var image = new Image();
+            var stageIntroBg = new Image(),
+                stage1Bg = new Image();
             
-            image.src = 'img/background.png';
+            stageIntroBg.src = 'img/stage-intro-bg.png';
+            stage1Bg.src = 'img/stage1-bg.png';
             
             this.set({
-                background: image
+                stageIntroBg: stageIntroBg,
+                stage1Bg: stage1Bg
             });
         }
         

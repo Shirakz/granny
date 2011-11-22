@@ -15,7 +15,7 @@ granny.BowlView = Backbone.View.extend({
         this.cannons = new granny.Cannons();
 
         this.model.set({
-            positionY: this.world.get('height') - this.model.get('height') + 5
+            positionY: this.world.get('height') - this.model.get('height')  + 12
         });
 
         this.event_aggregator.bind('catch:water', this.catchWater);
@@ -23,6 +23,8 @@ granny.BowlView = Backbone.View.extend({
         this.event_aggregator.bind('add:cannon', this.addCannon);
         this.event_aggregator.bind('miss:cannon', this.missCannon);
         this.event_aggregator.bind('end:turn', this.endTurn);
+        this.event_aggregator.bind('key:leftarrow', this.moveLeft);
+        this.event_aggregator.bind('key:rightarrow', this.moveRight);
         
     },
 
@@ -87,7 +89,40 @@ granny.BowlView = Backbone.View.extend({
     
     
     catchWater: function (water) {
+        var that = this,
+            image = this.model.get('currentImage') + 1,
+            animationId,
+            prevImage = 7;
         this.addEnergy(1);
+        
+        if (image > 5) {
+            // avoid going to 8 when catching and being in 7
+            image = 6;
+
+            // water splash animation
+            animationId = setInterval(function () {
+                image = prevImage === 7 ? 7 : 6;
+                prevImage = image === 7 ? 6 : 7;
+                console.log(image);
+                console.log(prevImage);
+                that.model.set({
+                    currentImage: image, 
+                    positionY: that.world.get('height') - that.model.get('height')  - 9
+                });
+            }, 250);
+            
+            setTimeout(function () {
+            
+                clearTimeout(animationId);
+                that.model.set({
+                    currentImage: that.model.get('energy'),
+                    positionY: that.world.get('height') - that.model.get('height')  + 12
+                });
+                
+            }, 1000);
+        } else {
+            this.model.set({currentImage: image});
+        }
     },
     
     
