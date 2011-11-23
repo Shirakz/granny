@@ -25,7 +25,6 @@ $(document).ready(function () {
         play: function (ev, name) {
             var sound;
 
-            console.log(name);
             sound = !name ? ev.get('addSound') : ev.get(name);
 
             sound.pause();

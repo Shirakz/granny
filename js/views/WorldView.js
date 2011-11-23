@@ -35,7 +35,7 @@ $(document).ready(function () {
 
             // cache the images
             _(['stage-intro-bg.png', 'stage1-bg.png', 'bowl-00.png', 'bowl-01.png', 'bowl-02.png', 'bowl-03.png', 'bowl-04.png', 'bowl-05.png', 'bowl-06.png', 'bowl-07.png', 
-                'cannon.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
+                'cannon-01.png', 'cannon-02.png', 'granny_left.png', 'granny_right.png', 'water1.png', 'water2.png']).each(function (item) {
                 var img = new Image();
                 
                 img.src = 'img/' + item;
