@@ -16,7 +16,9 @@ $(document).ready(function () {
             marginLeft: 0,
             marginRight: 0,
             currentImage: 0,
-            idAnimation: false
+            idAnimation: false,
+            addSound: $('#bowl-catch').get(0),
+            addSoundFull: $('#bowl-full').get(0)
         },
         
         

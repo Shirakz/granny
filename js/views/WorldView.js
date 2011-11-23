@@ -15,7 +15,7 @@ $(document).ready(function () {
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
             _.bindAll(this, 'play', 'pause', 'reset', 'preStage', 'stageIntro', 'stage1', 'winner', 'flashes',
-                'renderWaters', 'renderCannons', 'renderScore', 'singleKeyDown', 'keydown', 
+                'renderWaters', 'renderCannons', 'renderScore', 'singleKeyDown', 'keydown', 'addWater',
                 'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions',
                 'removeGlobalEvents', 'restoreGlobalEvents');
             
@@ -28,6 +28,7 @@ $(document).ready(function () {
             this.bowl.model.bind('change:lifes', this.endTurn);
             this.model.bind('singleKeyDown', this.singleKeyDown);
             this.event_aggregator.bind('end:game', this.endGame);
+            this.event_aggregator.bind('addWater', this.addWater);
 
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.keyup);            
@@ -121,7 +122,8 @@ $(document).ready(function () {
                 grannyDirection = _(this.granny.model.get('currentDirection')).capitalize(),
                 grannyImg = this.granny.model.get('image' + grannyDirection),
                 grannyX = this.granny.model.get('positionX'),
-                grannyY = this.granny.model.get('positionY');
+                grannyY = this.granny.model.get('positionY'),
+                watersAdded = this.model.get('watersAdded');
                 
             ctx.drawImage(bg, 0, 0);
             ctx.drawImage(grannyImg, grannyX, grannyY);
@@ -131,8 +133,9 @@ $(document).ready(function () {
             this.renderCannons(ctx);
             this.renderScore(ctx);
 
-            if (this.loop % 600 === 0) {
-                this.event_aggregator.trigger('increase:speed:granny', 4);
+            if (watersAdded > 9) {
+                this.event_aggregator.trigger('increase:speed:granny', 1);
+                this.model.set({watersAdded: 0});
             }
             
             this.move();
@@ -402,6 +405,12 @@ $(document).ready(function () {
         removeGlobalEvents: function () {
             this.storedGlobalEvents = $.extend({}, this.event_aggregator);
             this.event_aggregator.unbind();
+        },
+        
+        
+        addWater: function () {
+            var newWatersAdded = this.model.get('watersAdded') + 1;
+            this.model.set({watersAdded: newWatersAdded});
         },
         
         

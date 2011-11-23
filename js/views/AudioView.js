@@ -14,7 +14,7 @@ $(document).ready(function () {
         
         
         initialize: function () {        
-            _.bindAll(this, 'add', 'toggleAudio', 'enableAudio', 'disableAudio');
+            _.bindAll(this, 'play', 'toggleAudio', 'enableAudio', 'disableAudio');
             
             this.world = granny.World;
             
@@ -22,8 +22,17 @@ $(document).ready(function () {
         },
         
         
-        add: function (ev) {
-            var sound = ev.get('addSound');
+        play: function (ev, name) {
+            var sound;
+            console.log(ev);
+            if (!name) {
+                sound = ev.get('addSound');
+            } else {
+                sound = ev.get(name);
+            }
+            
+            sound.pause();
+            sound.currentTime = 0;
             sound.play();
         },
         
@@ -38,16 +47,18 @@ $(document).ready(function () {
         
                 
         enableAudio: function () {
-            this.event_aggregator.bind('addWater', this.add);
-            this.event_aggregator.bind('addCannon', this.add);
+            this.event_aggregator.bind('addWater', this.play);
+            this.event_aggregator.bind('addCannon', this.play);
+            this.event_aggregator.bind('bowl:catch', this.play);
+            this.event_aggregator.bind('bowl:catchFull', this.play);
 
             this.el.html('Mute');
         },
         
         
         disableAudio: function () {
-            this.event_aggregator.unbind('addWater', this.add);
-            this.event_aggregator.unbind('addCannon', this.add);
+            this.event_aggregator.unbind('addWater', this.play);
+            this.event_aggregator.unbind('addCannon', this.play);
             
             this.el.html('Unmute');
         }        

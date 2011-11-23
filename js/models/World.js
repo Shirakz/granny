@@ -14,7 +14,8 @@ $(document).ready(function () {
             refreshRate: 1000 / 60, // lower = more fluid (and more CPU consuming)
             audio: true,
             stage: 'stageIntro',
-            idAnimation: false
+            idAnimation: false,
+            watersAdded: 0 // counting the ones catched
         },
 
 

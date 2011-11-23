@@ -116,7 +116,10 @@ granny.BowlView = Backbone.View.extend({
             this.model.set({idActiveAnimation: idAnimation});
 
         } else if (image <= 5) {
+            this.event_aggregator.trigger('bowl:catch', this.model);
             this.model.set({currentImage: image});
+        } else {
+            this.event_aggregator.trigger('bowl:catchFull', this.model, 'addSoundFull');
         }
     },
     
