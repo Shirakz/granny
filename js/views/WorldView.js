@@ -14,8 +14,8 @@ $(document).ready(function () {
         // entry point
         initialize: function () {        
             // pass "this" referring to this object to the listed methods instead of the default "this"
-            _.bindAll(this, 'play', 'pause', 'preStage', 'stageIntro', 'stage1', 'winner',
-                'renderWaters', 'renderCannons', 'singleKeyDown', 'keydown', 
+            _.bindAll(this, 'play', 'pause', 'reset', 'preStage', 'stageIntro', 'stage1', 'winner', 'flashes',
+                'renderWaters', 'renderCannons', 'renderScore', 'singleKeyDown', 'keydown', 
                 'keyup', 'endTurn', 'move', 'checkWaterCollisions', 'checkCannonCollisions',
                 'removeGlobalEvents', 'restoreGlobalEvents');
             
@@ -28,9 +28,10 @@ $(document).ready(function () {
             this.bowl.model.bind('change:lifes', this.endTurn);
             this.model.bind('singleKeyDown', this.singleKeyDown);
             this.event_aggregator.bind('end:game', this.endGame);
-            
+
             $(document).on('keydown', this.keydown);
             $(document).on('keyup', this.keyup);            
+            $('#reset').on('click', this.reset);            
 
             // cache the images
             _(['stage-intro-bg.png', 'stage1-bg.png', 'bowl-00.png', 'bowl-01.png', 'bowl-02.png', 'bowl-03.png', 'bowl-04.png', 'bowl-05.png', 'bowl-06.png', 'bowl-07.png', 
@@ -41,14 +42,13 @@ $(document).ready(function () {
             });
 
             // start the rendering loop
-            this.preStage();         
-            
+            this.preStage();
         },
         
         
         // rendering loop
         play: function () {
-            var stage = this.model.get('stage'); // get the 
+            var stage = this.model.get('stage');
 
             this.loop = requestAnimFrame(this.play);
             this[stage]();
@@ -104,9 +104,9 @@ $(document).ready(function () {
             
             ctx.drawImage(bg, 0, 0);
             
-            ctx.font = '20px Times New Roman';  
+            ctx.font = '20px Pixel';  
             ctx.fillStyle = '#404041';  
-            ctx.fillText('Press enter to play', 330, height/1.15); 
+            ctx.fillText('Press enter to play', 290, height/1.15);
         },
 
         
@@ -121,16 +121,19 @@ $(document).ready(function () {
                 grannyDirection = _(this.granny.model.get('currentDirection')).capitalize(),
                 grannyImg = this.granny.model.get('image' + grannyDirection),
                 grannyX = this.granny.model.get('positionX'),
-                grannyY = this.granny.model.get('positionY');    
+                grannyY = this.granny.model.get('positionY');
                 
-            // ctx.globalAlpha = 0.01;
             ctx.drawImage(bg, 0, 0);
             ctx.drawImage(grannyImg, grannyX, grannyY);
             ctx.drawImage(bowlImg, bowlX, bowlY);
             
-            // console.log(bowlCurrentImgName);
             this.renderWaters(ctx);
             this.renderCannons(ctx);
+            this.renderScore(ctx);
+
+            if (this.loop % 600 === 0) {
+                this.event_aggregator.trigger('increase:speed:granny', 4);
+            }
             
             this.move();
         },
@@ -182,6 +185,15 @@ $(document).ready(function () {
             }, this);
         },
                 
+                
+        renderScore: function (ctx) {
+            var bowlPoints = 3 - this.granny.model.get('lifes'),
+                grannyPoints = 3 - this.bowl.model.get('lifes');
+            
+            ctx.font = '40px Pixel';  
+            ctx.fillStyle = '#ffd64a';  
+            ctx.fillText(grannyPoints + ' - ' + bowlPoints, 550, 30);
+        },
 
         keydown: function (ev) {        
             // first keydown
@@ -261,6 +273,7 @@ $(document).ready(function () {
             if (lifes > 0) {
                 this.event_aggregator.trigger('end:turn');
                 this.pause(2000);
+                this.flashes();
             } else {
                 winner = name === 'granny' ? 'bowl' : 'granny';
                 
@@ -274,11 +287,46 @@ $(document).ready(function () {
         },
         
         
+        flashes: function () {
+            var ctx = this.model.get('ctx'),
+                width = this.model.get('width'),
+                height = this.model.get('height'),
+                idAnimation;
+            
+            
+            ctx.globalAlpha = 0.2;
+                           
+            ctx.fillStyle = '#237';
+            ctx.fillRect(0, 0, width, height);
+            
+            setTimeout(function () {
+                ctx.fillStyle = '#49a';
+                ctx.fillRect(0, 0, width, height);
+                
+                setTimeout(function () {
+                    ctx.fillStyle = '#99c';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    setTimeout(function () {
+                    ctx.fillStyle = '#bbd';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                        ctx.globalAlpha = 1;
+                    }, 100);                    
+                }, 100);
+            } , 100);
+        },
+        
+        
         winner: function (winner) {
             var ctx = this.model.get('ctx'),
                 bg = this[winner].model.get('winnerImage');
 
-                ctx.drawImage(bg, 0, 0);
+            ctx.drawImage(bg, 0, 0);
+                        
+            ctx.font = '80px Pixel';
+            ctx.fillStyle = '#ffd64a';  
+            ctx.fillText(_.capitalize(winner) + ' wins!', 150, 500);
         },
         
         
@@ -354,6 +402,23 @@ $(document).ready(function () {
         removeGlobalEvents: function () {
             this.storedGlobalEvents = $.extend({}, this.event_aggregator);
             this.event_aggregator.unbind();
+        },
+        
+        
+        reset: function () {
+            this.storedGlobalEvents = $.extend({}, this.event_aggregator);
+            this.pause();
+            this.loop = false;
+            this.model.set(this.model.defaults);
+            this.bowl.model.set(this.bowl.model.defaults);
+            this.granny.model.set(this.granny.model.defaults);
+            
+            this.bowl.initialize();
+            this.granny.initialize();
+            
+            this.restoreGlobalEvents();
+            
+            this.preStage();
         }
         
     });

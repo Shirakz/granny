@@ -6,7 +6,7 @@ granny.GrannyView = Backbone.View.extend({
     // entry point
     initialize: function () {        
         // pass "this" referring to this object to the listed methods instead of the default "this"
-        _.bindAll(this, 'moveLeft', 'moveRight', 'addWater', 'destroyWater', 'fallWater', 'kill', 'endTurn');
+        _.bindAll(this, 'moveLeft', 'moveRight', 'addWater', 'destroyWater', 'fallWater', 'kill', 'endTurn', 'increaseSpeed');
         
         this.world = granny.World;
 
@@ -21,6 +21,14 @@ granny.GrannyView = Backbone.View.extend({
         this.event_aggregator.bind('end:turn', this.endTurn);
         this.event_aggregator.bind('key:a', this.moveLeft);
         this.event_aggregator.bind('key:d', this.moveRight);
+        this.event_aggregator.bind('increase:speed:granny', this.increaseSpeed);
+    },
+    
+    
+    increaseSpeed: function (inc) {
+        var currentSpeed = this.model.get('speed');
+        
+        this.model.set({speed: currentSpeed + inc});
     },
     
     

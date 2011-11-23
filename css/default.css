@@ -6,3 +6,10 @@ body {
     margin: 0 auto;
     width: 800px;    
 }
+
+@font-face {
+	font-family: 'Pixel';
+	font-style: normal;
+	font-weight: normal;
+	src: url(../fonts/Pixel.ttf) format('truetype');
+}

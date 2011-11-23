@@ -7,7 +7,7 @@ $(document).ready(function () {
         defaults: {
             name: 'granny',
             lifes: 3,
-            speed: 7,
+            speed: 4,
             width: 96,
             height: 136,
             canWidth: 45,

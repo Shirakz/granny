@@ -1,0 +1,24 @@
+@font-face {
+	font-family: 'Cuprum';
+	font-style: normal;
+	font-weight: normal;
+	src: url(../fonts/Cuprum.ttf) format('truetype');
+}
+@font-face {
+	font-family: 'Amaranth';
+	font-style: normal;
+	font-weight: normal;
+	src: url(../fonts/Amaranth.ttf) format('truetype');
+}
+@font-face {
+	font-family: 'HelveticaThin';
+	font-style: normal;
+	font-weight: normal;
+	src: url(../fonts/HelveticaNeueLTStd-ThCn.otf) format('opentype');
+}
+@font-face {
+	font-family: 'HelveticaBlack';
+	font-style: normal;
+	font-weight: normal;
+	src: url(../fonts/HelveticaNeueLTStd-BlkEx.otf) format('opentype');
+}

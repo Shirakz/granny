@@ -13,7 +13,8 @@ $(document).ready(function () {
             ctx: document.getElementById('canvas').getContext('2d'),
             refreshRate: 1000 / 60, // lower = more fluid (and more CPU consuming)
             audio: true,
-            stage: 'stageIntro'
+            stage: 'stageIntro',
+            idAnimation: false
         },
 
 
