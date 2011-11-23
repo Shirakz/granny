@@ -24,13 +24,9 @@ $(document).ready(function () {
         
         play: function (ev, name) {
             var sound;
-            console.log(ev);
-            if (!name) {
-                sound = ev.get('addSound');
-            } else {
-                sound = ev.get(name);
-            }
-            
+
+            sound = !name ? ev.get('addSound') : ev.get(name);
+
             sound.pause();
             sound.currentTime = 0;
             sound.play();

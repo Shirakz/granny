@@ -132,7 +132,8 @@ granny.BowlView = Backbone.View.extend({
         
         this.model.set({
             idActiveAnimation: false,
-            positionY: this.world.get('height') - this.model.get('height')  + 12
+            positionY: this.world.get('height') - this.model.get('height')  + 12,
+            currentImage: energy
         });
     },
     
@@ -152,6 +153,9 @@ granny.BowlView = Backbone.View.extend({
         var lifes = this.model.get('lifes') - 1;
         
         this.model.set({lifes: lifes});
+        this.model.set({energy: 0});
+        this.restoreImage();
+        // this.model.set({currentImage: 0});
 
         console.log('bowl died! lifes: ' + this.model.get('lifes'));
     },

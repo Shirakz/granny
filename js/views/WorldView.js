@@ -325,6 +325,12 @@ $(document).ready(function () {
             var ctx = this.model.get('ctx'),
                 bg = this[winner].model.get('winnerImage');
 
+                console.log(winner);
+            winner = _.capitalize(winner);
+            if (winner === 'Bowl') {
+                winner = '  Bowl';
+            }
+            console.log(winner);
             ctx.drawImage(bg, 0, 0);
                         
             ctx.font = '80px Pixel';
