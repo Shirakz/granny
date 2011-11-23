@@ -27,7 +27,6 @@ $(document).ready(function () {
             this.granny.model.bind('change:lifes', this.endTurn);
             this.bowl.model.bind('change:lifes', this.endTurn);
             this.model.bind('singleKeyDown', this.singleKeyDown);
-            this.event_aggregator.bind('end:game', this.endGame);
             this.event_aggregator.bind('addWater', this.addWater);
 
             $(document).on('keydown', this.keydown);
@@ -151,9 +150,7 @@ $(document).ready(function () {
                     frameSwitchSpeed = water.get('frameSwitchSpeed'),
                     spriteCounter = water.get('spriteCounter');
                 
-                water.set({
-                    spriteCounter: spriteCounter + 1
-                });
+                water.set({spriteCounter: spriteCounter + 1});
 
                 // switch the sprite every X frames
                 if (spriteCounter >= frameSwitchSpeed) {
@@ -177,10 +174,27 @@ $(document).ready(function () {
         
         renderCannons: function (ctx) {
             _(this.bowl.cannons.models).each(function (cannon) {
-                var cannonImg = cannon.get('image'),
+                var cannonImg,
                     cannonX = cannon.get('positionX'),
-                    cannonY = cannon.get('positionY');
+                    cannonY = cannon.get('positionY'),
+                    cannonSprite = cannon.get('cannonSprite'),
+                    frameSwitchSpeed = cannon.get('frameSwitchSpeed'),
+                    spriteCounter = cannon.get('spriteCounter');
 
+                cannon.set({spriteCounter: spriteCounter + 1});
+                
+                // switch the sprite every X frames
+                if (spriteCounter >= frameSwitchSpeed) {
+                    cannon.set({
+                        spriteCounter: 0,
+                        cannonSprite: cannonSprite === 1 ? 2 : 1
+                    });
+                    
+                    cannonSprite = cannonSprite === 1 ? 2 : 1;
+                }
+                
+                cannonImg = cannon.get('image' + cannonSprite);
+                
                 ctx.drawImage(cannonImg, cannonX, cannonY);
 
                 this.bowl.fallCannon(cannon);
@@ -273,8 +287,9 @@ $(document).ready(function () {
                 winner,
                 that = this;
             
-            if (lifes > 0) {
-                this.event_aggregator.trigger('end:turn');
+            this.event_aggregator.trigger('end:turn', this.model, 'deathSound');
+            
+            if (lifes > 0) {                
                 this.pause(2000);
                 this.flashes();
             } else {
@@ -282,7 +297,7 @@ $(document).ready(function () {
                 
                 console.log(name + ' lost :(');
                 
-                this.pause(2000, function () {
+                this.pause(3000, function () {
                     that.winner(winner);
                 });
             }
@@ -299,19 +314,19 @@ $(document).ready(function () {
             
             ctx.globalAlpha = 0.2;
                            
-            ctx.fillStyle = '#237';
+            ctx.fillStyle = '#ff0';
             ctx.fillRect(0, 0, width, height);
             
             setTimeout(function () {
-                ctx.fillStyle = '#49a';
+                ctx.fillStyle = '#ac0';
                 ctx.fillRect(0, 0, width, height);
                 
                 setTimeout(function () {
-                    ctx.fillStyle = '#99c';
+                    ctx.fillStyle = '#cb0';
                     ctx.fillRect(0, 0, width, height);
                     
-                    setTimeout(function () {
-                    ctx.fillStyle = '#bbd';
+                    setTimeout(function () {                    
+                    ctx.fillStyle = '#ff0';
                     ctx.fillRect(0, 0, width, height);
                     
                         ctx.globalAlpha = 1;
@@ -323,19 +338,26 @@ $(document).ready(function () {
         
         winner: function (winner) {
             var ctx = this.model.get('ctx'),
-                bg = this[winner].model.get('winnerImage');
+                bg = this[winner].model.get('winnerImage'),
+                that = this;
 
-                console.log(winner);
+            this.event_aggregator.bind('end:game', this.audio.play);
+            
+            this.event_aggregator.trigger('end:game', this.model, 'winnerSound');
+            
+            console.log(this.event_aggregator);
+            
             winner = _.capitalize(winner);
+            
             if (winner === 'Bowl') {
-                winner = '  Bowl';
+                winner = ' Bowl';
             }
-            console.log(winner);
+            
             ctx.drawImage(bg, 0, 0);
                         
             ctx.font = '80px Pixel';
             ctx.fillStyle = '#ffd64a';  
-            ctx.fillText(_.capitalize(winner) + ' wins!', 150, 500);
+            ctx.fillText(winner + ' wins!', 150, 500);
         },
         
         

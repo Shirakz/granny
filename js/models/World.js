@@ -15,7 +15,9 @@ $(document).ready(function () {
             audio: true,
             stage: 'stageIntro',
             idAnimation: false,
-            watersAdded: 0 // counting the ones catched
+            watersAdded: 0, // counting the ones catched
+            deathSound: $('#death').get(0),
+            winnerSound: $('#winner').get(0),
         },
 
 

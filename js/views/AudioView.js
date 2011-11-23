@@ -25,6 +25,7 @@ $(document).ready(function () {
         play: function (ev, name) {
             var sound;
 
+            console.log(name);
             sound = !name ? ev.get('addSound') : ev.get(name);
 
             sound.pause();
@@ -47,6 +48,8 @@ $(document).ready(function () {
             this.event_aggregator.bind('addCannon', this.play);
             this.event_aggregator.bind('bowl:catch', this.play);
             this.event_aggregator.bind('bowl:catchFull', this.play);
+            this.event_aggregator.bind('end:turn', this.play);
+            this.event_aggregator.bind('end:game', this.play);
 
             this.el.html('Mute');
         },
@@ -55,6 +58,8 @@ $(document).ready(function () {
         disableAudio: function () {
             this.event_aggregator.unbind('addWater', this.play);
             this.event_aggregator.unbind('addCannon', this.play);
+            this.event_aggregator.unbind('bowl:catch', this.play);
+            this.event_aggregator.unbind('bowl:catchFull', this.play);
             
             this.el.html('Unmute');
         }        
