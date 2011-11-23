@@ -109,7 +109,7 @@ granny.BowlView = Backbone.View.extend({
 
                 that.model.set({
                     currentImage: image, 
-                    positionY: that.world.get('height') - that.model.get('height')  - 9
+                    positionY: that.world.get('height') - that.model.get('height')  - 5
                 });
             }, 200);
 
